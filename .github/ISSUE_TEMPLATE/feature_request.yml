@@ -1,0 +1,28 @@
+name: Feature request
+description: Suggest an improvement for the integration
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing an idea.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Which problem are you trying to solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What should change?
+      description: Describe the feature or UX improvement you would like to see.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add screenshots, example payloads or Home Assistant context if useful.

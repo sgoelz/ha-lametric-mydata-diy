@@ -1,0 +1,52 @@
+name: Validate
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  hacs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run HACS validation
+        uses: hacs/action@main
+        with:
+          category: integration
+
+  hassfest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run hassfest
+        uses: home-assistant/actions/hassfest@master
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Validate JSON files
+        run: |
+          python -m json.tool hacs.json > /dev/null
+          python -m json.tool custom_components/lametric_mydata_diy/manifest.json > /dev/null
+          python -m json.tool custom_components/lametric_mydata_diy/translations/en.json > /dev/null
+          python -m json.tool custom_components/lametric_mydata_diy/translations/de.json > /dev/null
+
+      - name: Compile integration
+        run: python -m compileall custom_components/lametric_mydata_diy
