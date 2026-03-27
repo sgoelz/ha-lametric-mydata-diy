@@ -33,6 +33,8 @@ http://<home-assistant>:8123/local/lametric/my_data_diy.json
 
 ## Installation
 
+[![Open your Home Assistant instance and add this repository inside HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=sgoelz&repository=ha-lametric-mydata-diy&category=integration)
+
 ### HACS
 
 1. Add this repository as a custom repository in HACS.
@@ -78,6 +80,16 @@ This repository includes the basics HACS usually expects for a custom integratio
 - brand assets inside the integration directory
 - validation via `hacs/action` and `hassfest`
 - issue templates and installation documentation
+
+## HACS default repository checklist
+
+If you want to propose this repository for inclusion in the default HACS list later, make sure you have:
+
+- a public GitHub repository with Issues enabled
+- a clear repository description and relevant topics
+- at least one published GitHub Release
+- passing `hacs/action` and `hassfest`
+- installation and usage documentation in the README
 
 ## Service
 
