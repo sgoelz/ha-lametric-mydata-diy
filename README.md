@@ -60,6 +60,8 @@ The setup runs in two steps:
    - format
    - optional prefix/suffix
 
+You can browse official LaMetric icons in the [LaMetric icon gallery](https://developer.lametric.com/icons).
+
 Recommended defaults for a typical energy dashboard setup:
 
 - `sensor.total_dc_power` + icon `27464` + `power`
