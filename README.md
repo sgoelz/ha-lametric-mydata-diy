@@ -6,12 +6,12 @@ This custom integration lets you configure up to eight rotating LaMetric frames 
 
 - an icon ID
 - a duration
-- a display format (`power`, `percent`, `raw`)
+- a display format (`power`, `percent`, `energy`, `raw`)
 - an optional prefix
 - an optional suffix
-- output only under `/config/www/...`
+- output only under Home Assistant's `www/...` folder
 
-The integration writes a JSON file into `/config/www/...`, so the resulting URL can be polled directly by the LaMetric app:
+The integration writes a JSON file into Home Assistant's `www/...` folder, so the resulting URL can be polled directly by the LaMetric app:
 
 ```text
 http://<home-assistant>:8123/local/lametric/my_data_diy.json
@@ -53,7 +53,7 @@ The setup runs in two steps:
 
 1. General settings
    - feed title
-   - one output path inside `/config` (default: `www/lametric/my_data_diy.json`)
+   - one output path inside your Home Assistant config directory (default: `www/lametric/my_data_diy.json`)
    - active frame count
 2. Frame settings for the active frames only
    - entity picker
@@ -72,6 +72,10 @@ Recommended defaults for a typical energy dashboard setup:
 - `sensor.battery_level` + icon `389` + `percent`
 - `sensor.skoda_enyaq_batteriestand` + icon `2809` + `percent`
 - `sensor.batteriestand` + icon `2818` + `percent`
+- `sensor.daily_imported_energy` + icon `7959` + `energy`
+
+The `energy` formatter reads the entity unit and scales supported values automatically between
+`Wh`, `kWh`, `MWh` and `GWh`.
 
 ## HACS notes
 
@@ -116,7 +120,7 @@ data:
 {"frames":[
   {"icon":27464,"text":"1.2kW","duration":4000},
   {"icon":389,"text":"59%","duration":3000},
-  {"icon":2809,"text":"43%","duration":3000},
+  {"icon":7959,"text":"6.4kWh","duration":3000},
   {"icon":2818,"text":"76%","duration":3000}
 ]}
 ```

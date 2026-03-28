@@ -12,7 +12,7 @@ from uuid import uuid4
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
-from homeassistant.core import Event, HomeAssistant, ServiceCall
+from homeassistant.core import Event, HomeAssistant, ServiceCall, State
 from homeassistant.helpers.event import async_call_later, async_track_state_change_event
 
 from .const import (
@@ -29,6 +29,7 @@ from .const import (
     DEFAULT_FRAMES,
     DEFAULT_OUTPUT_PATH,
     DOMAIN,
+    FORMAT_ENERGY,
     FORMAT_PERCENT,
     FORMAT_POWER,
     MAX_FRAME_COUNT,
@@ -40,14 +41,48 @@ _LOGGER = logging.getLogger(__name__)
 Unsub = Callable[[], None]
 
 
-def _parse_float(raw: str | None, default: float = 0.0) -> float:
+def _parse_float(raw: str | None, default: float | None = 0.0) -> float | None:
     try:
         return float(str(raw).replace(",", "."))
     except (TypeError, ValueError):
         return default
 
 
-def _format_value(raw: str | None, value_format: str) -> str:
+def _normalize_energy_to_wh(raw: str | None, unit: Any) -> float | None:
+    """Convert a supported energy value to Wh."""
+    factors = {
+        "wh": 1,
+        "kwh": 1_000,
+        "mwh": 1_000_000,
+        "gwh": 1_000_000_000,
+    }
+    normalized_unit = str(unit or "").strip().lower().replace(" ", "")
+    factor = factors.get(normalized_unit)
+    if factor is None:
+        return None
+
+    value = _parse_float(raw, None)
+    if value is None:
+        return None
+
+    return value * factor
+
+
+def _format_energy(energy_wh: float) -> str:
+    """Format an energy value using compact units."""
+    magnitude = abs(energy_wh)
+    if magnitude >= 1_000_000_000:
+        return f"{energy_wh / 1_000_000_000:.1f}GWh"
+    if magnitude >= 1_000_000:
+        return f"{energy_wh / 1_000_000:.1f}MWh"
+    if magnitude >= 1_000:
+        return f"{energy_wh / 1_000:.1f}kWh"
+    return f"{round(energy_wh):.0f}Wh"
+
+
+def _format_value(state: State | None, value_format: str) -> str:
+    raw = state.state if state else None
+
     if value_format == FORMAT_POWER:
         watts = _parse_float(raw, 0.0)
         if watts >= 1000:
@@ -59,6 +94,17 @@ def _format_value(raw: str | None, value_format: str) -> str:
         if percent < 0:
             return "--%"
         return f"{round(percent):.0f}%"
+
+    if value_format == FORMAT_ENERGY:
+        if raw in (None, "", "unknown", "unavailable"):
+            return "--"
+        energy_wh = _normalize_energy_to_wh(
+            raw,
+            state.attributes.get("unit_of_measurement") if state else None,
+        )
+        if energy_wh is None:
+            return str(raw)
+        return _format_energy(energy_wh)
 
     if raw in (None, "", "unknown", "unavailable"):
         return "--"
@@ -199,7 +245,7 @@ class LaMetricFeedWriter:
             if not frame[CONF_ENABLED] or not frame[CONF_ENTITY_ID]:
                 continue
             state = self.hass.states.get(frame[CONF_ENTITY_ID])
-            value = _format_value(state.state if state else None, frame[CONF_FORMAT])
+            value = _format_value(state, frame[CONF_FORMAT])
             payload_frame = {
                 "text": _apply_affixes(value, frame[CONF_PREFIX], frame[CONF_SUFFIX]),
                 "duration": frame[CONF_DURATION],

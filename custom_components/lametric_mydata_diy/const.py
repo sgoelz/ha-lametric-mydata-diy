@@ -21,8 +21,9 @@ CONF_FRAME_COUNT: Final = "frame_count"
 
 FORMAT_POWER: Final = "power"
 FORMAT_PERCENT: Final = "percent"
+FORMAT_ENERGY: Final = "energy"
 FORMAT_RAW: Final = "raw"
-FORMAT_OPTIONS: Final = [FORMAT_POWER, FORMAT_PERCENT, FORMAT_RAW]
+FORMAT_OPTIONS: Final = [FORMAT_POWER, FORMAT_PERCENT, FORMAT_ENERGY, FORMAT_RAW]
 
 DEFAULT_OUTPUT_PATH: Final = "www/lametric/my_data_diy.json"
 DEFAULT_FRAME_COUNT: Final = 4

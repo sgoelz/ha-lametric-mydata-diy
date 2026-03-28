@@ -9,6 +9,7 @@ from typing import Any
 import voluptuous as vol
 
 from homeassistant import config_entries
+from homeassistant.data_entry_flow import section
 from homeassistant.helpers.selector import (
     EntitySelector,
     EntitySelectorConfig,
@@ -122,62 +123,58 @@ def _frames_schema(defaults: Mapping[str, Any], frame_count: int) -> vol.Schema:
     schema: dict[Any, Any] = {}
 
     for idx in range(1, frame_count + 1):
-        schema[
-            vol.Required(
-                frame_key(idx, CONF_ENTITY_ID),
-                default=defaults[frame_key(idx, CONF_ENTITY_ID)],
-            )
-        ] = EntitySelector(EntitySelectorConfig())
-        schema[
-            vol.Required(
-                frame_key(idx, CONF_ICON),
-                default=defaults[frame_key(idx, CONF_ICON)],
-            )
-        ] = NumberSelector(
-            NumberSelectorConfig(
-                min=0,
-                max=999999,
-                step=1,
-                mode=NumberSelectorMode.BOX,
-            )
+        schema[vol.Required(f"frame_{idx}")] = section(
+            vol.Schema(
+                {
+                    vol.Required(
+                        CONF_ENTITY_ID,
+                        default=defaults[frame_key(idx, CONF_ENTITY_ID)],
+                    ): EntitySelector(EntitySelectorConfig()),
+                    vol.Required(
+                        CONF_ICON,
+                        default=defaults[frame_key(idx, CONF_ICON)],
+                    ): NumberSelector(
+                        NumberSelectorConfig(
+                            min=0,
+                            max=999999,
+                            step=1,
+                            mode=NumberSelectorMode.BOX,
+                        )
+                    ),
+                    vol.Required(
+                        CONF_DURATION,
+                        default=defaults[frame_key(idx, CONF_DURATION)],
+                    ): NumberSelector(
+                        NumberSelectorConfig(
+                            min=1000,
+                            max=10000,
+                            step=500,
+                            mode=NumberSelectorMode.BOX,
+                            unit_of_measurement="ms",
+                        )
+                    ),
+                    vol.Required(
+                        CONF_FORMAT,
+                        default=defaults[frame_key(idx, CONF_FORMAT)],
+                    ): SelectSelector(
+                        SelectSelectorConfig(
+                            options=FORMAT_OPTIONS,
+                            mode=SelectSelectorMode.DROPDOWN,
+                            translation_key="value_format",
+                        )
+                    ),
+                    vol.Optional(
+                        CONF_PREFIX,
+                        default=defaults[frame_key(idx, CONF_PREFIX)],
+                    ): TextSelector(),
+                    vol.Optional(
+                        CONF_SUFFIX,
+                        default=defaults[frame_key(idx, CONF_SUFFIX)],
+                    ): TextSelector(),
+                }
+            ),
+            {"collapsed": idx > 1},
         )
-        schema[
-            vol.Required(
-                frame_key(idx, CONF_DURATION),
-                default=defaults[frame_key(idx, CONF_DURATION)],
-            )
-        ] = NumberSelector(
-            NumberSelectorConfig(
-                min=1000,
-                max=10000,
-                step=500,
-                mode=NumberSelectorMode.BOX,
-                unit_of_measurement="ms",
-            )
-        )
-        schema[
-            vol.Required(
-                frame_key(idx, CONF_FORMAT),
-                default=defaults[frame_key(idx, CONF_FORMAT)],
-            )
-        ] = SelectSelector(
-            SelectSelectorConfig(
-                options=FORMAT_OPTIONS,
-                mode=SelectSelectorMode.DROPDOWN,
-            )
-        )
-        schema[
-            vol.Optional(
-                frame_key(idx, CONF_PREFIX),
-                default=defaults[frame_key(idx, CONF_PREFIX)],
-            )
-        ] = TextSelector()
-        schema[
-            vol.Optional(
-                frame_key(idx, CONF_SUFFIX),
-                default=defaults[frame_key(idx, CONF_SUFFIX)],
-            )
-        ] = TextSelector()
 
     return vol.Schema(schema)
 
@@ -197,23 +194,24 @@ def _merge_frame_settings(
         if idx > frame_count:
             continue
 
+        section_input = frame_input.get(f"frame_{idx}", {})
         merged[frame_key(idx, CONF_ENTITY_ID)] = str(
-            frame_input.get(frame_key(idx, CONF_ENTITY_ID), defaults[frame_key(idx, CONF_ENTITY_ID)])
+            section_input.get(CONF_ENTITY_ID, defaults[frame_key(idx, CONF_ENTITY_ID)])
         ).strip()
         merged[frame_key(idx, CONF_ICON)] = int(
-            frame_input.get(frame_key(idx, CONF_ICON), defaults[frame_key(idx, CONF_ICON)])
+            section_input.get(CONF_ICON, defaults[frame_key(idx, CONF_ICON)])
         )
         merged[frame_key(idx, CONF_DURATION)] = int(
-            frame_input.get(frame_key(idx, CONF_DURATION), defaults[frame_key(idx, CONF_DURATION)])
+            section_input.get(CONF_DURATION, defaults[frame_key(idx, CONF_DURATION)])
         )
         merged[frame_key(idx, CONF_FORMAT)] = str(
-            frame_input.get(frame_key(idx, CONF_FORMAT), defaults[frame_key(idx, CONF_FORMAT)])
+            section_input.get(CONF_FORMAT, defaults[frame_key(idx, CONF_FORMAT)])
         )
         merged[frame_key(idx, CONF_PREFIX)] = str(
-            frame_input.get(frame_key(idx, CONF_PREFIX), defaults[frame_key(idx, CONF_PREFIX)])
+            section_input.get(CONF_PREFIX, defaults[frame_key(idx, CONF_PREFIX)])
         )
         merged[frame_key(idx, CONF_SUFFIX)] = str(
-            frame_input.get(frame_key(idx, CONF_SUFFIX), defaults[frame_key(idx, CONF_SUFFIX)])
+            section_input.get(CONF_SUFFIX, defaults[frame_key(idx, CONF_SUFFIX)])
         )
 
     return merged

@@ -2,80 +2,56 @@
   "config": {
     "error": {
       "output_path_required": "Bitte gib einen Ausgabepfad ein.",
-      "output_path_must_be_inside_www": "Der Ausgabepfad muss innerhalb von /config/www liegen.",
+      "output_path_must_be_inside_www": "Der Ausgabepfad muss innerhalb des Home-Assistant-www-Ordners liegen.",
       "output_path_must_end_with_json": "Der Ausgabepfad muss mit .json enden.",
-      "frame_count_invalid": "Die Anzahl aktiver Frames ist ungueltig."
+      "frame_count_invalid": "Die Anzahl aktiver Frames ist ungültig."
     },
     "step": {
       "user": {
         "title": "LaMetric My Data DIY",
-        "description": "Konfiguriere Feed-Titel, Ausgabepfad und die Anzahl aktiver Frames.",
+        "description": "Konfiguriere den Feed-Namen, den Dateipfad und die Anzahl der Frames.",
         "data": {
-          "title": "Feed-Titel",
-          "output_path": "Ausgabepfad in /config",
-          "frame_count": "Anzahl aktiver Frames"
+          "title": "Feed-Name",
+          "output_path": "Pfad zur Feed-Datei",
+          "frame_count": "Anzahl der Frames"
         }
       },
       "frames": {
         "title": "LaMetric My Data DIY",
-        "description": "Waehle Entities und Anzeigeeinstellungen fuer die aktiven Frames.",
+        "description": "Wähle aus, was jeder Frame anzeigen soll.",
         "data": {
-          "frame_1_enabled": "Frame 1 aktiv",
-          "frame_1_entity_id": "Frame-1-Entity-ID",
-          "frame_1_icon": "Frame-1-Icon-ID",
-          "frame_1_duration": "Frame-1-Dauer",
-          "frame_1_format": "Frame-1-Format",
-          "frame_1_prefix": "Frame-1-Praefix",
-          "frame_1_suffix": "Frame-1-Suffix",
-          "frame_2_enabled": "Frame 2 aktiv",
-          "frame_2_entity_id": "Frame-2-Entity-ID",
-          "frame_2_icon": "Frame-2-Icon-ID",
-          "frame_2_duration": "Frame-2-Dauer",
-          "frame_2_format": "Frame-2-Format",
-          "frame_2_prefix": "Frame-2-Praefix",
-          "frame_2_suffix": "Frame-2-Suffix",
-          "frame_3_enabled": "Frame 3 aktiv",
-          "frame_3_entity_id": "Frame-3-Entity-ID",
-          "frame_3_icon": "Frame-3-Icon-ID",
-          "frame_3_duration": "Frame-3-Dauer",
-          "frame_3_format": "Frame-3-Format",
-          "frame_3_prefix": "Frame-3-Praefix",
-          "frame_3_suffix": "Frame-3-Suffix",
-          "frame_4_enabled": "Frame 4 aktiv",
-          "frame_4_entity_id": "Frame-4-Entity-ID",
-          "frame_4_icon": "Frame-4-Icon-ID",
-          "frame_4_duration": "Frame-4-Dauer",
-          "frame_4_format": "Frame-4-Format",
-          "frame_4_prefix": "Frame-4-Praefix",
-          "frame_4_suffix": "Frame-4-Suffix",
-          "frame_5_enabled": "Frame 5 aktiv",
-          "frame_5_entity_id": "Frame-5-Entity-ID",
-          "frame_5_icon": "Frame-5-Icon-ID",
-          "frame_5_duration": "Frame-5-Dauer",
-          "frame_5_format": "Frame-5-Format",
-          "frame_5_prefix": "Frame-5-Praefix",
-          "frame_5_suffix": "Frame-5-Suffix",
-          "frame_6_enabled": "Frame 6 aktiv",
-          "frame_6_entity_id": "Frame-6-Entity-ID",
-          "frame_6_icon": "Frame-6-Icon-ID",
-          "frame_6_duration": "Frame-6-Dauer",
-          "frame_6_format": "Frame-6-Format",
-          "frame_6_prefix": "Frame-6-Praefix",
-          "frame_6_suffix": "Frame-6-Suffix",
-          "frame_7_enabled": "Frame 7 aktiv",
-          "frame_7_entity_id": "Frame-7-Entity-ID",
-          "frame_7_icon": "Frame-7-Icon-ID",
-          "frame_7_duration": "Frame-7-Dauer",
-          "frame_7_format": "Frame-7-Format",
-          "frame_7_prefix": "Frame-7-Praefix",
-          "frame_7_suffix": "Frame-7-Suffix",
-          "frame_8_enabled": "Frame 8 aktiv",
-          "frame_8_entity_id": "Frame-8-Entity-ID",
-          "frame_8_icon": "Frame-8-Icon-ID",
-          "frame_8_duration": "Frame-8-Dauer",
-          "frame_8_format": "Frame-8-Format",
-          "frame_8_prefix": "Frame-8-Praefix",
-          "frame_8_suffix": "Frame-8-Suffix"
+          "entity_id": "Entität",
+          "icon": "Icon",
+          "duration": "Anzeigedauer",
+          "format": "Wertformat",
+          "prefix": "Text vor dem Wert",
+          "suffix": "Text nach dem Wert"
+        },
+        "sections": {
+          "frame_1": {
+            "name": "Frame 1"
+          },
+          "frame_2": {
+            "name": "Frame 2"
+          },
+          "frame_3": {
+            "name": "Frame 3"
+          },
+          "frame_4": {
+            "name": "Frame 4"
+          },
+          "frame_5": {
+            "name": "Frame 5"
+          },
+          "frame_6": {
+            "name": "Frame 6"
+          },
+          "frame_7": {
+            "name": "Frame 7"
+          },
+          "frame_8": {
+            "name": "Frame 8"
+          }
         }
       }
     }
@@ -83,81 +59,67 @@
   "options": {
     "error": {
       "output_path_required": "Bitte gib einen Ausgabepfad ein.",
-      "output_path_must_be_inside_www": "Der Ausgabepfad muss innerhalb von /config/www liegen.",
+      "output_path_must_be_inside_www": "Der Ausgabepfad muss innerhalb des Home-Assistant-www-Ordners liegen.",
       "output_path_must_end_with_json": "Der Ausgabepfad muss mit .json enden.",
-      "frame_count_invalid": "Die Anzahl aktiver Frames ist ungueltig."
+      "frame_count_invalid": "Die Anzahl aktiver Frames ist ungültig."
     },
     "step": {
       "init": {
         "title": "LaMetric My Data DIY",
-        "description": "Passe Feed-Titel, Ausgabepfad und die Anzahl aktiver Frames an.",
+        "description": "Passe den Feed-Namen, den Dateipfad und die Anzahl der Frames an.",
         "data": {
-          "title": "Feed-Titel",
-          "output_path": "Ausgabepfad in /config",
-          "frame_count": "Anzahl aktiver Frames"
+          "title": "Feed-Name",
+          "output_path": "Pfad zur Feed-Datei",
+          "frame_count": "Anzahl der Frames"
         }
       },
       "frames": {
         "title": "LaMetric My Data DIY",
-        "description": "Passe Entities und Anzeigeeinstellungen fuer die aktiven Frames an.",
+        "description": "Passe an, was jeder Frame anzeigen soll.",
         "data": {
-          "frame_1_enabled": "Frame 1 aktiv",
-          "frame_1_entity_id": "Frame-1-Entity-ID",
-          "frame_1_icon": "Frame-1-Icon-ID",
-          "frame_1_duration": "Frame-1-Dauer",
-          "frame_1_format": "Frame-1-Format",
-          "frame_1_prefix": "Frame-1-Praefix",
-          "frame_1_suffix": "Frame-1-Suffix",
-          "frame_2_enabled": "Frame 2 aktiv",
-          "frame_2_entity_id": "Frame-2-Entity-ID",
-          "frame_2_icon": "Frame-2-Icon-ID",
-          "frame_2_duration": "Frame-2-Dauer",
-          "frame_2_format": "Frame-2-Format",
-          "frame_2_prefix": "Frame-2-Praefix",
-          "frame_2_suffix": "Frame-2-Suffix",
-          "frame_3_enabled": "Frame 3 aktiv",
-          "frame_3_entity_id": "Frame-3-Entity-ID",
-          "frame_3_icon": "Frame-3-Icon-ID",
-          "frame_3_duration": "Frame-3-Dauer",
-          "frame_3_format": "Frame-3-Format",
-          "frame_3_prefix": "Frame-3-Praefix",
-          "frame_3_suffix": "Frame-3-Suffix",
-          "frame_4_enabled": "Frame 4 aktiv",
-          "frame_4_entity_id": "Frame-4-Entity-ID",
-          "frame_4_icon": "Frame-4-Icon-ID",
-          "frame_4_duration": "Frame-4-Dauer",
-          "frame_4_format": "Frame-4-Format",
-          "frame_4_prefix": "Frame-4-Praefix",
-          "frame_4_suffix": "Frame-4-Suffix",
-          "frame_5_enabled": "Frame 5 aktiv",
-          "frame_5_entity_id": "Frame-5-Entity-ID",
-          "frame_5_icon": "Frame-5-Icon-ID",
-          "frame_5_duration": "Frame-5-Dauer",
-          "frame_5_format": "Frame-5-Format",
-          "frame_5_prefix": "Frame-5-Praefix",
-          "frame_5_suffix": "Frame-5-Suffix",
-          "frame_6_enabled": "Frame 6 aktiv",
-          "frame_6_entity_id": "Frame-6-Entity-ID",
-          "frame_6_icon": "Frame-6-Icon-ID",
-          "frame_6_duration": "Frame-6-Dauer",
-          "frame_6_format": "Frame-6-Format",
-          "frame_6_prefix": "Frame-6-Praefix",
-          "frame_6_suffix": "Frame-6-Suffix",
-          "frame_7_enabled": "Frame 7 aktiv",
-          "frame_7_entity_id": "Frame-7-Entity-ID",
-          "frame_7_icon": "Frame-7-Icon-ID",
-          "frame_7_duration": "Frame-7-Dauer",
-          "frame_7_format": "Frame-7-Format",
-          "frame_7_prefix": "Frame-7-Praefix",
-          "frame_7_suffix": "Frame-7-Suffix",
-          "frame_8_enabled": "Frame 8 aktiv",
-          "frame_8_entity_id": "Frame-8-Entity-ID",
-          "frame_8_icon": "Frame-8-Icon-ID",
-          "frame_8_duration": "Frame-8-Dauer",
-          "frame_8_format": "Frame-8-Format",
-          "frame_8_prefix": "Frame-8-Praefix",
-          "frame_8_suffix": "Frame-8-Suffix"
+          "entity_id": "Entität",
+          "icon": "Icon",
+          "duration": "Anzeigedauer",
+          "format": "Wertformat",
+          "prefix": "Text vor dem Wert",
+          "suffix": "Text nach dem Wert"
+        },
+        "sections": {
+          "frame_1": {
+            "name": "Frame 1"
+          },
+          "frame_2": {
+            "name": "Frame 2"
+          },
+          "frame_3": {
+            "name": "Frame 3"
+          },
+          "frame_4": {
+            "name": "Frame 4"
+          },
+          "frame_5": {
+            "name": "Frame 5"
+          },
+          "frame_6": {
+            "name": "Frame 6"
+          },
+          "frame_7": {
+            "name": "Frame 7"
+          },
+          "frame_8": {
+            "name": "Frame 8"
+          }
         }
+      }
+    }
+  },
+  "selector": {
+    "value_format": {
+      "options": {
+        "power": "Leistung",
+        "percent": "Prozent",
+        "energy": "Energie",
+        "raw": "Rohwert"
       }
     }
   }
