@@ -9,7 +9,7 @@ This custom integration lets you configure up to eight rotating LaMetric frames 
 - a display format (`power`, `percent`, `raw`)
 - an optional prefix
 - an optional suffix
-- an enabled/disabled state
+- output only under `/config/www/...`
 
 The integration writes a JSON file into `/config/www/...`, so the resulting URL can be polled directly by the LaMetric app:
 
@@ -25,7 +25,7 @@ http://<home-assistant>:8123/local/lametric/my_data_diy.json
 - Option flow for later edits
 - Multiple feeds via multiple config entries
 - Up to 8 frames per feed
-- Text-only frames by setting icon `0`
+- Iconless text frames by setting icon `0`
 - Optional prefixes and suffixes per frame
 - Automatic refresh on entity state changes
 - Manual refresh service: `lametric_mydata_diy.refresh`
@@ -61,6 +61,8 @@ The setup runs in two steps:
    - duration
    - format
    - optional prefix/suffix
+
+Active frames are controlled by the configured frame count. Setting icon `0` removes the icon and keeps the text.
 
 You can browse official LaMetric icons in the [LaMetric icon gallery](https://developer.lametric.com/icons).
 

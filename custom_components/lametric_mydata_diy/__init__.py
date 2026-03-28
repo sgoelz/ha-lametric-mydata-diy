@@ -6,6 +6,7 @@ from collections.abc import Callable
 import json
 import logging
 from pathlib import Path
+from pathlib import PurePosixPath
 from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
@@ -25,6 +26,7 @@ from .const import (
     CONF_SUFFIX,
     DEFAULT_FRAME_COUNT,
     DEFAULT_FRAMES,
+    DEFAULT_OUTPUT_PATH,
     DOMAIN,
     FORMAT_PERCENT,
     FORMAT_POWER,
@@ -97,6 +99,25 @@ def _write_payload(target: Path, payload: dict[str, Any]) -> None:
     temp_path.replace(target)
 
 
+def _resolve_output_path(hass: HomeAssistant, raw_path: Any) -> Path:
+    """Resolve an output path and keep writes confined to /config/www."""
+    relative = str(raw_path or DEFAULT_OUTPUT_PATH).strip().lstrip("/")
+    normalized = PurePosixPath(relative)
+    if not normalized.parts or normalized.parts[0] != "www":
+        raise ValueError("output path must stay inside /config/www")
+    if ".." in normalized.parts:
+        raise ValueError("output path must stay inside /config/www")
+    if normalized.suffix != ".json":
+        raise ValueError("output path must end with .json")
+
+    base_path = Path(hass.config.path("www")).resolve()
+    target_path = Path(hass.config.path(normalized.as_posix())).resolve(strict=False)
+    if target_path != base_path and base_path not in target_path.parents:
+        raise ValueError("output path resolved outside /config/www")
+
+    return target_path
+
+
 class LaMetricFeedWriter:
     """Manage feed generation for one config entry."""
 
@@ -115,8 +136,10 @@ class LaMetricFeedWriter:
     @property
     def output_path(self) -> Path:
         """Return the absolute target path for the JSON payload."""
-        relative = str(self.config.get(CONF_OUTPUT_PATH, "www/lametric/my_data_diy.json")).lstrip("/")
-        return Path(self.hass.config.path(relative))
+        return _resolve_output_path(
+            self.hass,
+            self.config.get(CONF_OUTPUT_PATH, DEFAULT_OUTPUT_PATH),
+        )
 
     @property
     def frame_count(self) -> int:
@@ -163,6 +186,12 @@ class LaMetricFeedWriter:
 
     async def async_write_payload(self) -> None:
         """Render and write the current payload."""
+        try:
+            output_path = self.output_path
+        except ValueError as err:
+            _LOGGER.error("Invalid output path for %s: %s", self.entry.entry_id, err)
+            return
+
         payload = {"frames": []}
         for idx in range(1, self.frame_count + 1):
             frame = _frame_config(self.config, idx)
@@ -178,8 +207,8 @@ class LaMetricFeedWriter:
                 payload_frame["icon"] = frame[CONF_ICON]
             payload["frames"].append(payload_frame)
 
-        await self.hass.async_add_executor_job(_write_payload, self.output_path, payload)
-        _LOGGER.debug("Updated LaMetric feed for %s at %s", self.entry.entry_id, self.output_path)
+        await self.hass.async_add_executor_job(_write_payload, output_path, payload)
+        _LOGGER.debug("Updated LaMetric feed for %s at %s", self.entry.entry_id, output_path)
 
     async def _handle_state_change(self, event: Event) -> None:
         """Update feed when a tracked entity changes."""

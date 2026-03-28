@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from pathlib import PurePosixPath
 from typing import Any
 
 import voluptuous as vol
@@ -53,11 +54,14 @@ def _normalize_output_path(raw: Any) -> str:
     value = str(raw or "").strip().lstrip("/")
     if not value:
         raise vol.Invalid("output_path_required")
-    if not value.startswith("www/"):
+    normalized = PurePosixPath(value)
+    if not normalized.parts or normalized.parts[0] != "www":
         raise vol.Invalid("output_path_must_be_inside_www")
-    if not value.endswith(".json"):
+    if ".." in normalized.parts:
+        raise vol.Invalid("output_path_must_be_inside_www")
+    if normalized.suffix != ".json":
         raise vol.Invalid("output_path_must_end_with_json")
-    return value
+    return normalized.as_posix()
 
 
 def _coerce_frame_count(raw: Any) -> int:
