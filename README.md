@@ -32,6 +32,7 @@ http://<home-assistant>:8123/local/lametric/my_data_diy.json
 - Optional prefixes and suffixes per frame
 - Automatic refresh on entity state changes
 - Automatic minute-based refresh for time frames
+- Human-friendly German and English labels in setup and options
 - Manual refresh service: `lametric_mydata_diy.refresh`
 - Writes a static JSON feed for LaMetric `My Data DIY`
 
@@ -152,7 +153,8 @@ Clock-frame example:
 
 ## Roadmap
 
-- additional formatters
+- additional formatters such as `temperature`, `voltage`, `current`, or configurable decimals
+- animated LaMetric icon codes in addition to numeric icon IDs
 - optional direct HTTP view instead of file output
 - diagnostics and repair flow
 - per-frame icon previews or curated presets
