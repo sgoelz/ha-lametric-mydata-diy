@@ -6,7 +6,7 @@ This custom integration lets you configure up to eight rotating LaMetric frames 
 
 - an icon ID
 - a duration
-- a display format (`power`, `percent`, `energy`, `raw`)
+- a display format (`power`, `percent`, `energy`, `time`, `raw`)
 - an optional prefix
 - an optional suffix
 - output only under Home Assistant's `www/...` folder
@@ -22,12 +22,16 @@ http://<home-assistant>:8123/local/lametric/my_data_diy.json
 - HACS-compatible custom integration
 - UI-based configuration via Config Flow
 - Two-step config flow with a cleaner separation between general settings and frame details
+- Collapsible per-frame sections in setup and options
 - Option flow for later edits
 - Multiple feeds via multiple config entries
 - Up to 8 frames per feed
+- Built-in value formats for `power`, `percent`, `energy`, `time`, and `raw`
+- Dedicated `Use current time` preset per frame
 - Iconless text frames by setting icon `0`
 - Optional prefixes and suffixes per frame
 - Automatic refresh on entity state changes
+- Automatic minute-based refresh for time frames
 - Manual refresh service: `lametric_mydata_diy.refresh`
 - Writes a static JSON feed for LaMetric `My Data DIY`
 
@@ -56,13 +60,15 @@ The setup runs in two steps:
    - one output path inside your Home Assistant config directory (default: `www/lametric/my_data_diy.json`)
    - active frame count
 2. Frame settings for the active frames only
-   - entity picker
+   - current-time toggle
+   - entity field
    - icon ID
    - duration
    - format
    - optional prefix/suffix
 
-Active frames are controlled by the configured frame count. Setting icon `0` removes the icon and keeps the text.
+Active frames are controlled by the configured frame count. In the second step, each frame is shown
+as its own collapsible section. Setting icon `0` removes the icon and keeps the text.
 
 You can browse official LaMetric icons in the [LaMetric icon gallery](https://developer.lametric.com/icons).
 
@@ -73,9 +79,20 @@ Recommended defaults for a typical energy dashboard setup:
 - `sensor.skoda_enyaq_batteriestand` + icon `2809` + `percent`
 - `sensor.batteriestand` + icon `2818` + `percent`
 - `sensor.daily_imported_energy` + icon `7959` + `energy`
+- no entity + icon `0` + `time`
 
 The `energy` formatter reads the entity unit and scales supported values automatically between
 `Wh`, `kWh`, `MWh` and `GWh`.
+
+The `time` formatter renders the current Home Assistant system time in `HH:MM`.
+
+The `Use current time` preset is the simplest way to configure a clock frame:
+
+- no entity is required
+- the feed refreshes automatically every minute
+- if the icon is set to `0`, the integration uses a built-in LaMetric-style clock icon
+
+You can also keep using the plain `time` value format if you prefer.
 
 ## HACS notes
 
@@ -122,6 +139,14 @@ data:
   {"icon":389,"text":"59%","duration":3000},
   {"icon":7959,"text":"6.4kWh","duration":3000},
   {"icon":2818,"text":"76%","duration":3000}
+]}
+```
+
+Clock-frame example:
+
+```json
+{"frames":[
+  {"text":"11:42","duration":3000,"icon":"data:image/png;base64,..."}
 ]}
 ```
 

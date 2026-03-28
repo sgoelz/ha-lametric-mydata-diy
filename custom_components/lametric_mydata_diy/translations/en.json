@@ -8,7 +8,7 @@
     },
     "step": {
       "user": {
-        "title": "LaMetric My Data DIY",
+        "title": "General settings",
         "description": "Configure the feed name, file path and number of frames.",
         "data": {
           "title": "Feed name",
@@ -17,40 +17,104 @@
         }
       },
       "frames": {
-        "title": "LaMetric My Data DIY",
-        "description": "Choose what each frame should display.",
-        "data": {
-          "entity_id": "Entity",
-          "icon": "Icon",
-          "duration": "Display time",
-          "format": "Value format",
-          "prefix": "Text before value",
-          "suffix": "Text after value"
-        },
+        "title": "Frame settings",
+        "description": "Choose what each frame should display. To change the number of frames, close this dialog and reopen the setup.",
         "sections": {
           "frame_1": {
-            "name": "Frame 1"
+            "name": "Frame 1",
+            "data": {
+              "current_time": "Use current time",
+              "entity": "Entity (optional for current time)",
+              "icon": "Icon",
+              "duration": "Display time",
+              "format": "Value format",
+              "prefix": "Text before value",
+              "suffix": "Text after value"
+            }
           },
           "frame_2": {
-            "name": "Frame 2"
+            "name": "Frame 2",
+            "data": {
+              "current_time": "Use current time",
+              "entity": "Entity (optional for current time)",
+              "icon": "Icon",
+              "duration": "Display time",
+              "format": "Value format",
+              "prefix": "Text before value",
+              "suffix": "Text after value"
+            }
           },
           "frame_3": {
-            "name": "Frame 3"
+            "name": "Frame 3",
+            "data": {
+              "current_time": "Use current time",
+              "entity": "Entity (optional for current time)",
+              "icon": "Icon",
+              "duration": "Display time",
+              "format": "Value format",
+              "prefix": "Text before value",
+              "suffix": "Text after value"
+            }
           },
           "frame_4": {
-            "name": "Frame 4"
+            "name": "Frame 4",
+            "data": {
+              "current_time": "Use current time",
+              "entity": "Entity (optional for current time)",
+              "icon": "Icon",
+              "duration": "Display time",
+              "format": "Value format",
+              "prefix": "Text before value",
+              "suffix": "Text after value"
+            }
           },
           "frame_5": {
-            "name": "Frame 5"
+            "name": "Frame 5",
+            "data": {
+              "current_time": "Use current time",
+              "entity": "Entity (optional for current time)",
+              "icon": "Icon",
+              "duration": "Display time",
+              "format": "Value format",
+              "prefix": "Text before value",
+              "suffix": "Text after value"
+            }
           },
           "frame_6": {
-            "name": "Frame 6"
+            "name": "Frame 6",
+            "data": {
+              "current_time": "Use current time",
+              "entity": "Entity (optional for current time)",
+              "icon": "Icon",
+              "duration": "Display time",
+              "format": "Value format",
+              "prefix": "Text before value",
+              "suffix": "Text after value"
+            }
           },
           "frame_7": {
-            "name": "Frame 7"
+            "name": "Frame 7",
+            "data": {
+              "current_time": "Use current time",
+              "entity": "Entity (optional for current time)",
+              "icon": "Icon",
+              "duration": "Display time",
+              "format": "Value format",
+              "prefix": "Text before value",
+              "suffix": "Text after value"
+            }
           },
           "frame_8": {
-            "name": "Frame 8"
+            "name": "Frame 8",
+            "data": {
+              "current_time": "Use current time",
+              "entity": "Entity (optional for current time)",
+              "icon": "Icon",
+              "duration": "Display time",
+              "format": "Value format",
+              "prefix": "Text before value",
+              "suffix": "Text after value"
+            }
           }
         }
       }
@@ -65,7 +129,7 @@
     },
     "step": {
       "init": {
-        "title": "LaMetric My Data DIY",
+        "title": "General settings",
         "description": "Adjust the feed name, file path and number of frames.",
         "data": {
           "title": "Feed name",
@@ -74,40 +138,104 @@
         }
       },
       "frames": {
-        "title": "LaMetric My Data DIY",
-        "description": "Adjust what each frame should display.",
-        "data": {
-          "entity_id": "Entity",
-          "icon": "Icon",
-          "duration": "Display time",
-          "format": "Value format",
-          "prefix": "Text before value",
-          "suffix": "Text after value"
-        },
+        "title": "Frame settings",
+        "description": "Adjust what each frame should display. To change the number of frames, close this dialog and reopen the options.",
         "sections": {
           "frame_1": {
-            "name": "Frame 1"
+            "name": "Frame 1",
+            "data": {
+              "current_time": "Use current time",
+              "entity": "Entity (optional for current time)",
+              "icon": "Icon",
+              "duration": "Display time",
+              "format": "Value format",
+              "prefix": "Text before value",
+              "suffix": "Text after value"
+            }
           },
           "frame_2": {
-            "name": "Frame 2"
+            "name": "Frame 2",
+            "data": {
+              "current_time": "Use current time",
+              "entity": "Entity (optional for current time)",
+              "icon": "Icon",
+              "duration": "Display time",
+              "format": "Value format",
+              "prefix": "Text before value",
+              "suffix": "Text after value"
+            }
           },
           "frame_3": {
-            "name": "Frame 3"
+            "name": "Frame 3",
+            "data": {
+              "current_time": "Use current time",
+              "entity": "Entity (optional for current time)",
+              "icon": "Icon",
+              "duration": "Display time",
+              "format": "Value format",
+              "prefix": "Text before value",
+              "suffix": "Text after value"
+            }
           },
           "frame_4": {
-            "name": "Frame 4"
+            "name": "Frame 4",
+            "data": {
+              "current_time": "Use current time",
+              "entity": "Entity (optional for current time)",
+              "icon": "Icon",
+              "duration": "Display time",
+              "format": "Value format",
+              "prefix": "Text before value",
+              "suffix": "Text after value"
+            }
           },
           "frame_5": {
-            "name": "Frame 5"
+            "name": "Frame 5",
+            "data": {
+              "current_time": "Use current time",
+              "entity": "Entity (optional for current time)",
+              "icon": "Icon",
+              "duration": "Display time",
+              "format": "Value format",
+              "prefix": "Text before value",
+              "suffix": "Text after value"
+            }
           },
           "frame_6": {
-            "name": "Frame 6"
+            "name": "Frame 6",
+            "data": {
+              "current_time": "Use current time",
+              "entity": "Entity (optional for current time)",
+              "icon": "Icon",
+              "duration": "Display time",
+              "format": "Value format",
+              "prefix": "Text before value",
+              "suffix": "Text after value"
+            }
           },
           "frame_7": {
-            "name": "Frame 7"
+            "name": "Frame 7",
+            "data": {
+              "current_time": "Use current time",
+              "entity": "Entity (optional for current time)",
+              "icon": "Icon",
+              "duration": "Display time",
+              "format": "Value format",
+              "prefix": "Text before value",
+              "suffix": "Text after value"
+            }
           },
           "frame_8": {
-            "name": "Frame 8"
+            "name": "Frame 8",
+            "data": {
+              "current_time": "Use current time",
+              "entity": "Entity (optional for current time)",
+              "icon": "Icon",
+              "duration": "Display time",
+              "format": "Value format",
+              "prefix": "Text before value",
+              "suffix": "Text after value"
+            }
           }
         }
       }
@@ -119,6 +247,7 @@
         "power": "Power",
         "percent": "Percentage",
         "energy": "Energy",
+        "time": "Current time",
         "raw": "Raw value"
       }
     }

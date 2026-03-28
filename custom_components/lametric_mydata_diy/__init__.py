@@ -13,9 +13,15 @@ from uuid import uuid4
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 from homeassistant.core import Event, HomeAssistant, ServiceCall, State
-from homeassistant.helpers.event import async_call_later, async_track_state_change_event
+from homeassistant.helpers.event import (
+    async_call_later,
+    async_track_state_change_event,
+    async_track_time_change,
+)
+from homeassistant.util import dt as dt_util
 
 from .const import (
+    CONF_CURRENT_TIME,
     CONF_DURATION,
     CONF_ENABLED,
     CONF_ENTITY_ID,
@@ -28,10 +34,12 @@ from .const import (
     DEFAULT_FRAME_COUNT,
     DEFAULT_FRAMES,
     DEFAULT_OUTPUT_PATH,
+    DEFAULT_TIME_ICON_DATA,
     DOMAIN,
     FORMAT_ENERGY,
     FORMAT_PERCENT,
     FORMAT_POWER,
+    FORMAT_TIME,
     MAX_FRAME_COUNT,
     SERVICE_REFRESH,
     frame_key,
@@ -83,6 +91,9 @@ def _format_energy(energy_wh: float) -> str:
 def _format_value(state: State | None, value_format: str) -> str:
     raw = state.state if state else None
 
+    if value_format == FORMAT_TIME:
+        return dt_util.now().strftime("%H:%M")
+
     if value_format == FORMAT_POWER:
         watts = _parse_float(raw, 0.0)
         if watts >= 1000:
@@ -129,6 +140,9 @@ def _frame_config(config: dict[str, Any], index: int) -> dict[str, Any]:
     defaults = DEFAULT_FRAMES[index - 1]
     return {
         CONF_ENABLED: bool(config.get(frame_key(index, CONF_ENABLED), defaults[CONF_ENABLED])),
+        CONF_CURRENT_TIME: bool(
+            config.get(frame_key(index, CONF_CURRENT_TIME), defaults[CONF_CURRENT_TIME])
+        ),
         CONF_ENTITY_ID: config.get(frame_key(index, CONF_ENTITY_ID), defaults[CONF_ENTITY_ID]),
         CONF_ICON: int(config.get(frame_key(index, CONF_ICON), defaults[CONF_ICON])),
         CONF_DURATION: int(config.get(frame_key(index, CONF_DURATION), defaults[CONF_DURATION])),
@@ -136,6 +150,11 @@ def _frame_config(config: dict[str, Any], index: int) -> dict[str, Any]:
         CONF_PREFIX: str(config.get(frame_key(index, CONF_PREFIX), defaults[CONF_PREFIX])),
         CONF_SUFFIX: str(config.get(frame_key(index, CONF_SUFFIX), defaults[CONF_SUFFIX])),
     }
+
+
+def _frame_uses_current_time(frame: dict[str, Any]) -> bool:
+    """Return whether a frame should render the current time."""
+    return bool(frame[CONF_CURRENT_TIME] or frame[CONF_FORMAT] == FORMAT_TIME)
 
 
 def _write_payload(target: Path, payload: dict[str, Any]) -> None:
@@ -201,20 +220,40 @@ class LaMetricFeedWriter:
             frame = _frame_config(self.config, idx)
             if not frame[CONF_ENABLED]:
                 continue
+            if _frame_uses_current_time(frame):
+                continue
             entity_id = frame[CONF_ENTITY_ID]
             if entity_id and entity_id not in entities:
                 entities.append(entity_id)
         return entities
 
+    @property
+    def has_time_frames(self) -> bool:
+        """Return whether any active frame renders the current time."""
+        for idx in range(1, self.frame_count + 1):
+            frame = _frame_config(self.config, idx)
+            if frame[CONF_ENABLED] and _frame_uses_current_time(frame):
+                return True
+        return False
+
     async def async_start(self) -> None:
         """Start tracking entity changes."""
-        self._unsubs.append(
-            async_track_state_change_event(
-                self.hass,
-                self.tracked_entities,
-                self._handle_state_change,
+        if self.tracked_entities:
+            self._unsubs.append(
+                async_track_state_change_event(
+                    self.hass,
+                    self.tracked_entities,
+                    self._handle_state_change,
+                )
             )
-        )
+        if self.has_time_frames:
+            self._unsubs.append(
+                async_track_time_change(
+                    self.hass,
+                    self._handle_time_tick,
+                    second=0,
+                )
+            )
         self._unsubs.append(
             self.hass.bus.async_listen_once(
                 EVENT_HOMEASSISTANT_STARTED,
@@ -242,15 +281,25 @@ class LaMetricFeedWriter:
         payload = {"frames": []}
         for idx in range(1, self.frame_count + 1):
             frame = _frame_config(self.config, idx)
-            if not frame[CONF_ENABLED] or not frame[CONF_ENTITY_ID]:
+            if not frame[CONF_ENABLED]:
                 continue
-            state = self.hass.states.get(frame[CONF_ENTITY_ID])
-            value = _format_value(state, frame[CONF_FORMAT])
+            if not _frame_uses_current_time(frame) and not frame[CONF_ENTITY_ID]:
+                continue
+            state = None
+            value_format = frame[CONF_FORMAT]
+            if not _frame_uses_current_time(frame):
+                state = self.hass.states.get(frame[CONF_ENTITY_ID])
+            else:
+                value_format = FORMAT_TIME
+
+            value = _format_value(state, value_format)
             payload_frame = {
                 "text": _apply_affixes(value, frame[CONF_PREFIX], frame[CONF_SUFFIX]),
                 "duration": frame[CONF_DURATION],
             }
-            if frame[CONF_ICON] > 0:
+            if _frame_uses_current_time(frame) and frame[CONF_ICON] == 0:
+                payload_frame["icon"] = DEFAULT_TIME_ICON_DATA
+            elif frame[CONF_ICON] > 0:
                 payload_frame["icon"] = frame[CONF_ICON]
             payload["frames"].append(payload_frame)
 
@@ -259,6 +308,11 @@ class LaMetricFeedWriter:
 
     async def _handle_state_change(self, event: Event) -> None:
         """Update feed when a tracked entity changes."""
+        await self.async_write_payload()
+
+    async def _handle_time_tick(self, now: Any) -> None:
+        """Refresh time-based frames once per minute."""
+        del now
         await self.async_write_payload()
 
     async def _handle_started(self, event: Event) -> None:

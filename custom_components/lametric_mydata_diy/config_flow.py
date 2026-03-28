@@ -11,8 +11,7 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.data_entry_flow import section
 from homeassistant.helpers.selector import (
-    EntitySelector,
-    EntitySelectorConfig,
+    BooleanSelector,
     NumberSelector,
     NumberSelectorConfig,
     NumberSelectorMode,
@@ -23,6 +22,7 @@ from homeassistant.helpers.selector import (
 )
 
 from .const import (
+    CONF_CURRENT_TIME,
     CONF_DURATION,
     CONF_ENABLED,
     CONF_ENTITY_ID,
@@ -121,16 +121,21 @@ def _general_schema(defaults: Mapping[str, Any]) -> vol.Schema:
 def _frames_schema(defaults: Mapping[str, Any], frame_count: int) -> vol.Schema:
     """Build the frame-detail schema for the active frames only."""
     schema: dict[Any, Any] = {}
+    section_entity_key = "entity"
 
     for idx in range(1, frame_count + 1):
         schema[vol.Required(f"frame_{idx}")] = section(
             vol.Schema(
                 {
-                    vol.Required(
-                        CONF_ENTITY_ID,
+                    vol.Optional(
+                        CONF_CURRENT_TIME,
+                        default=defaults[frame_key(idx, CONF_CURRENT_TIME)],
+                    ): BooleanSelector(),
+                    vol.Optional(
+                        section_entity_key,
                         default=defaults[frame_key(idx, CONF_ENTITY_ID)],
-                    ): EntitySelector(EntitySelectorConfig()),
-                    vol.Required(
+                    ): TextSelector(),
+                    vol.Optional(
                         CONF_ICON,
                         default=defaults[frame_key(idx, CONF_ICON)],
                     ): NumberSelector(
@@ -141,7 +146,7 @@ def _frames_schema(defaults: Mapping[str, Any], frame_count: int) -> vol.Schema:
                             mode=NumberSelectorMode.BOX,
                         )
                     ),
-                    vol.Required(
+                    vol.Optional(
                         CONF_DURATION,
                         default=defaults[frame_key(idx, CONF_DURATION)],
                     ): NumberSelector(
@@ -153,7 +158,7 @@ def _frames_schema(defaults: Mapping[str, Any], frame_count: int) -> vol.Schema:
                             unit_of_measurement="ms",
                         )
                     ),
-                    vol.Required(
+                    vol.Optional(
                         CONF_FORMAT,
                         default=defaults[frame_key(idx, CONF_FORMAT)],
                     ): SelectSelector(
@@ -195,8 +200,14 @@ def _merge_frame_settings(
             continue
 
         section_input = frame_input.get(f"frame_{idx}", {})
+        merged[frame_key(idx, CONF_CURRENT_TIME)] = bool(
+            section_input.get(
+                CONF_CURRENT_TIME,
+                defaults[frame_key(idx, CONF_CURRENT_TIME)],
+            )
+        )
         merged[frame_key(idx, CONF_ENTITY_ID)] = str(
-            section_input.get(CONF_ENTITY_ID, defaults[frame_key(idx, CONF_ENTITY_ID)])
+            section_input.get("entity", defaults[frame_key(idx, CONF_ENTITY_ID)])
         ).strip()
         merged[frame_key(idx, CONF_ICON)] = int(
             section_input.get(CONF_ICON, defaults[frame_key(idx, CONF_ICON)])

@@ -18,12 +18,21 @@ CONF_ENABLED: Final = "enabled"
 CONF_PREFIX: Final = "prefix"
 CONF_SUFFIX: Final = "suffix"
 CONF_FRAME_COUNT: Final = "frame_count"
+CONF_CURRENT_TIME: Final = "current_time"
 
 FORMAT_POWER: Final = "power"
 FORMAT_PERCENT: Final = "percent"
 FORMAT_ENERGY: Final = "energy"
+FORMAT_TIME: Final = "time"
 FORMAT_RAW: Final = "raw"
-FORMAT_OPTIONS: Final = [FORMAT_POWER, FORMAT_PERCENT, FORMAT_ENERGY, FORMAT_RAW]
+FORMAT_OPTIONS: Final = [FORMAT_POWER, FORMAT_PERCENT, FORMAT_ENERGY, FORMAT_TIME, FORMAT_RAW]
+
+# Inferred from LaMetric's official clockface API example icon.
+DEFAULT_TIME_ICON_DATA: Final = (
+    "data:image/png;base64,"
+    "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAOklEQVQYlWNUVFBgwAeYcEncv//gP04FMEms"
+    "CmCSiooKjHAFMEF0SRQTsEnCFcAE0SUZGBgYGAl5EwA+6RhuHb9bggAAAABJRU5ErkJggg=="
+)
 
 DEFAULT_OUTPUT_PATH: Final = "www/lametric/my_data_diy.json"
 DEFAULT_FRAME_COUNT: Final = 4
@@ -37,6 +46,7 @@ DEFAULT_FRAMES: Final = (
         CONF_ICON: 27464,
         CONF_DURATION: 4000,
         CONF_FORMAT: FORMAT_POWER,
+        CONF_CURRENT_TIME: False,
         CONF_PREFIX: "",
         CONF_SUFFIX: "",
     },
@@ -46,6 +56,7 @@ DEFAULT_FRAMES: Final = (
         CONF_ICON: 389,
         CONF_DURATION: 3000,
         CONF_FORMAT: FORMAT_PERCENT,
+        CONF_CURRENT_TIME: False,
         CONF_PREFIX: "",
         CONF_SUFFIX: "",
     },
@@ -55,6 +66,7 @@ DEFAULT_FRAMES: Final = (
         CONF_ICON: 2809,
         CONF_DURATION: 3000,
         CONF_FORMAT: FORMAT_PERCENT,
+        CONF_CURRENT_TIME: False,
         CONF_PREFIX: "",
         CONF_SUFFIX: "",
     },
@@ -64,6 +76,7 @@ DEFAULT_FRAMES: Final = (
         CONF_ICON: 2818,
         CONF_DURATION: 3000,
         CONF_FORMAT: FORMAT_PERCENT,
+        CONF_CURRENT_TIME: False,
         CONF_PREFIX: "",
         CONF_SUFFIX: "",
     },
@@ -73,6 +86,7 @@ DEFAULT_FRAMES: Final = (
         CONF_ICON: 0,
         CONF_DURATION: 3000,
         CONF_FORMAT: FORMAT_RAW,
+        CONF_CURRENT_TIME: False,
         CONF_PREFIX: "",
         CONF_SUFFIX: "",
     },
@@ -82,6 +96,7 @@ DEFAULT_FRAMES: Final = (
         CONF_ICON: 0,
         CONF_DURATION: 3000,
         CONF_FORMAT: FORMAT_RAW,
+        CONF_CURRENT_TIME: False,
         CONF_PREFIX: "",
         CONF_SUFFIX: "",
     },
@@ -91,6 +106,7 @@ DEFAULT_FRAMES: Final = (
         CONF_ICON: 0,
         CONF_DURATION: 3000,
         CONF_FORMAT: FORMAT_RAW,
+        CONF_CURRENT_TIME: False,
         CONF_PREFIX: "",
         CONF_SUFFIX: "",
     },
@@ -100,6 +116,7 @@ DEFAULT_FRAMES: Final = (
         CONF_ICON: 0,
         CONF_DURATION: 3000,
         CONF_FORMAT: FORMAT_RAW,
+        CONF_CURRENT_TIME: False,
         CONF_PREFIX: "",
         CONF_SUFFIX: "",
     },

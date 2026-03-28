@@ -8,7 +8,7 @@
     },
     "step": {
       "user": {
-        "title": "LaMetric My Data DIY",
+        "title": "Allgemeine Einstellungen",
         "description": "Konfiguriere den Feed-Namen, den Dateipfad und die Anzahl der Frames.",
         "data": {
           "title": "Feed-Name",
@@ -17,40 +17,104 @@
         }
       },
       "frames": {
-        "title": "LaMetric My Data DIY",
-        "description": "Wähle aus, was jeder Frame anzeigen soll.",
-        "data": {
-          "entity_id": "Entität",
-          "icon": "Icon",
-          "duration": "Anzeigedauer",
-          "format": "Wertformat",
-          "prefix": "Text vor dem Wert",
-          "suffix": "Text nach dem Wert"
-        },
+        "title": "Frame-Einstellungen",
+        "description": "Wähle aus, was jeder Frame anzeigen soll. Um die Anzahl der Frames zu ändern, schließe diesen Dialog und öffne die Einrichtung erneut.",
         "sections": {
           "frame_1": {
-            "name": "Frame 1"
+            "name": "Frame 1",
+            "data": {
+              "current_time": "Aktuelle Uhrzeit verwenden",
+              "entity": "Entität (für Uhrzeit optional)",
+              "icon": "Icon",
+              "duration": "Anzeigedauer",
+              "format": "Wertformat",
+              "prefix": "Text vor dem Wert",
+              "suffix": "Text nach dem Wert"
+            }
           },
           "frame_2": {
-            "name": "Frame 2"
+            "name": "Frame 2",
+            "data": {
+              "current_time": "Aktuelle Uhrzeit verwenden",
+              "entity": "Entität (für Uhrzeit optional)",
+              "icon": "Icon",
+              "duration": "Anzeigedauer",
+              "format": "Wertformat",
+              "prefix": "Text vor dem Wert",
+              "suffix": "Text nach dem Wert"
+            }
           },
           "frame_3": {
-            "name": "Frame 3"
+            "name": "Frame 3",
+            "data": {
+              "current_time": "Aktuelle Uhrzeit verwenden",
+              "entity": "Entität (für Uhrzeit optional)",
+              "icon": "Icon",
+              "duration": "Anzeigedauer",
+              "format": "Wertformat",
+              "prefix": "Text vor dem Wert",
+              "suffix": "Text nach dem Wert"
+            }
           },
           "frame_4": {
-            "name": "Frame 4"
+            "name": "Frame 4",
+            "data": {
+              "current_time": "Aktuelle Uhrzeit verwenden",
+              "entity": "Entität (für Uhrzeit optional)",
+              "icon": "Icon",
+              "duration": "Anzeigedauer",
+              "format": "Wertformat",
+              "prefix": "Text vor dem Wert",
+              "suffix": "Text nach dem Wert"
+            }
           },
           "frame_5": {
-            "name": "Frame 5"
+            "name": "Frame 5",
+            "data": {
+              "current_time": "Aktuelle Uhrzeit verwenden",
+              "entity": "Entität (für Uhrzeit optional)",
+              "icon": "Icon",
+              "duration": "Anzeigedauer",
+              "format": "Wertformat",
+              "prefix": "Text vor dem Wert",
+              "suffix": "Text nach dem Wert"
+            }
           },
           "frame_6": {
-            "name": "Frame 6"
+            "name": "Frame 6",
+            "data": {
+              "current_time": "Aktuelle Uhrzeit verwenden",
+              "entity": "Entität (für Uhrzeit optional)",
+              "icon": "Icon",
+              "duration": "Anzeigedauer",
+              "format": "Wertformat",
+              "prefix": "Text vor dem Wert",
+              "suffix": "Text nach dem Wert"
+            }
           },
           "frame_7": {
-            "name": "Frame 7"
+            "name": "Frame 7",
+            "data": {
+              "current_time": "Aktuelle Uhrzeit verwenden",
+              "entity": "Entität (für Uhrzeit optional)",
+              "icon": "Icon",
+              "duration": "Anzeigedauer",
+              "format": "Wertformat",
+              "prefix": "Text vor dem Wert",
+              "suffix": "Text nach dem Wert"
+            }
           },
           "frame_8": {
-            "name": "Frame 8"
+            "name": "Frame 8",
+            "data": {
+              "current_time": "Aktuelle Uhrzeit verwenden",
+              "entity": "Entität (für Uhrzeit optional)",
+              "icon": "Icon",
+              "duration": "Anzeigedauer",
+              "format": "Wertformat",
+              "prefix": "Text vor dem Wert",
+              "suffix": "Text nach dem Wert"
+            }
           }
         }
       }
@@ -65,7 +129,7 @@
     },
     "step": {
       "init": {
-        "title": "LaMetric My Data DIY",
+        "title": "Allgemeine Einstellungen",
         "description": "Passe den Feed-Namen, den Dateipfad und die Anzahl der Frames an.",
         "data": {
           "title": "Feed-Name",
@@ -74,40 +138,104 @@
         }
       },
       "frames": {
-        "title": "LaMetric My Data DIY",
-        "description": "Passe an, was jeder Frame anzeigen soll.",
-        "data": {
-          "entity_id": "Entität",
-          "icon": "Icon",
-          "duration": "Anzeigedauer",
-          "format": "Wertformat",
-          "prefix": "Text vor dem Wert",
-          "suffix": "Text nach dem Wert"
-        },
+        "title": "Frame-Einstellungen",
+        "description": "Passe an, was jeder Frame anzeigen soll. Um die Anzahl der Frames zu ändern, schließe diesen Dialog und öffne die Optionen erneut.",
         "sections": {
           "frame_1": {
-            "name": "Frame 1"
+            "name": "Frame 1",
+            "data": {
+              "current_time": "Aktuelle Uhrzeit verwenden",
+              "entity": "Entität (für Uhrzeit optional)",
+              "icon": "Icon",
+              "duration": "Anzeigedauer",
+              "format": "Wertformat",
+              "prefix": "Text vor dem Wert",
+              "suffix": "Text nach dem Wert"
+            }
           },
           "frame_2": {
-            "name": "Frame 2"
+            "name": "Frame 2",
+            "data": {
+              "current_time": "Aktuelle Uhrzeit verwenden",
+              "entity": "Entität (für Uhrzeit optional)",
+              "icon": "Icon",
+              "duration": "Anzeigedauer",
+              "format": "Wertformat",
+              "prefix": "Text vor dem Wert",
+              "suffix": "Text nach dem Wert"
+            }
           },
           "frame_3": {
-            "name": "Frame 3"
+            "name": "Frame 3",
+            "data": {
+              "current_time": "Aktuelle Uhrzeit verwenden",
+              "entity": "Entität (für Uhrzeit optional)",
+              "icon": "Icon",
+              "duration": "Anzeigedauer",
+              "format": "Wertformat",
+              "prefix": "Text vor dem Wert",
+              "suffix": "Text nach dem Wert"
+            }
           },
           "frame_4": {
-            "name": "Frame 4"
+            "name": "Frame 4",
+            "data": {
+              "current_time": "Aktuelle Uhrzeit verwenden",
+              "entity": "Entität (für Uhrzeit optional)",
+              "icon": "Icon",
+              "duration": "Anzeigedauer",
+              "format": "Wertformat",
+              "prefix": "Text vor dem Wert",
+              "suffix": "Text nach dem Wert"
+            }
           },
           "frame_5": {
-            "name": "Frame 5"
+            "name": "Frame 5",
+            "data": {
+              "current_time": "Aktuelle Uhrzeit verwenden",
+              "entity": "Entität (für Uhrzeit optional)",
+              "icon": "Icon",
+              "duration": "Anzeigedauer",
+              "format": "Wertformat",
+              "prefix": "Text vor dem Wert",
+              "suffix": "Text nach dem Wert"
+            }
           },
           "frame_6": {
-            "name": "Frame 6"
+            "name": "Frame 6",
+            "data": {
+              "current_time": "Aktuelle Uhrzeit verwenden",
+              "entity": "Entität (für Uhrzeit optional)",
+              "icon": "Icon",
+              "duration": "Anzeigedauer",
+              "format": "Wertformat",
+              "prefix": "Text vor dem Wert",
+              "suffix": "Text nach dem Wert"
+            }
           },
           "frame_7": {
-            "name": "Frame 7"
+            "name": "Frame 7",
+            "data": {
+              "current_time": "Aktuelle Uhrzeit verwenden",
+              "entity": "Entität (für Uhrzeit optional)",
+              "icon": "Icon",
+              "duration": "Anzeigedauer",
+              "format": "Wertformat",
+              "prefix": "Text vor dem Wert",
+              "suffix": "Text nach dem Wert"
+            }
           },
           "frame_8": {
-            "name": "Frame 8"
+            "name": "Frame 8",
+            "data": {
+              "current_time": "Aktuelle Uhrzeit verwenden",
+              "entity": "Entität (für Uhrzeit optional)",
+              "icon": "Icon",
+              "duration": "Anzeigedauer",
+              "format": "Wertformat",
+              "prefix": "Text vor dem Wert",
+              "suffix": "Text nach dem Wert"
+            }
           }
         }
       }
@@ -119,6 +247,7 @@
         "power": "Leistung",
         "percent": "Prozent",
         "energy": "Energie",
+        "time": "Aktuelle Uhrzeit",
         "raw": "Rohwert"
       }
     }
