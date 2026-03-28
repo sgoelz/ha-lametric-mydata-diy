@@ -8,6 +8,7 @@ import logging
 from pathlib import Path
 from pathlib import PurePosixPath
 from typing import Any
+from uuid import uuid4
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
@@ -94,7 +95,7 @@ def _frame_config(config: dict[str, Any], index: int) -> dict[str, Any]:
 def _write_payload(target: Path, payload: dict[str, Any]) -> None:
     """Write payload atomically."""
     target.parent.mkdir(parents=True, exist_ok=True)
-    temp_path = target.with_suffix(f"{target.suffix}.tmp")
+    temp_path = target.with_name(f"{target.name}.{uuid4().hex}.tmp")
     temp_path.write_text(json.dumps(payload, separators=(",", ":")) + "\n", encoding="utf-8")
     temp_path.replace(target)
 
