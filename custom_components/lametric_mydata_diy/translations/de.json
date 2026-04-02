@@ -28,6 +28,7 @@
               "icon": "Icon",
               "duration": "Anzeigedauer",
               "format": "Wertformat",
+              "hide_when": "Frame ausblenden, wenn",
               "prefix": "Text vor dem Wert",
               "suffix": "Text nach dem Wert"
             }
@@ -40,6 +41,7 @@
               "icon": "Icon",
               "duration": "Anzeigedauer",
               "format": "Wertformat",
+              "hide_when": "Frame ausblenden, wenn",
               "prefix": "Text vor dem Wert",
               "suffix": "Text nach dem Wert"
             }
@@ -52,6 +54,7 @@
               "icon": "Icon",
               "duration": "Anzeigedauer",
               "format": "Wertformat",
+              "hide_when": "Frame ausblenden, wenn",
               "prefix": "Text vor dem Wert",
               "suffix": "Text nach dem Wert"
             }
@@ -64,6 +67,7 @@
               "icon": "Icon",
               "duration": "Anzeigedauer",
               "format": "Wertformat",
+              "hide_when": "Frame ausblenden, wenn",
               "prefix": "Text vor dem Wert",
               "suffix": "Text nach dem Wert"
             }
@@ -76,6 +80,7 @@
               "icon": "Icon",
               "duration": "Anzeigedauer",
               "format": "Wertformat",
+              "hide_when": "Frame ausblenden, wenn",
               "prefix": "Text vor dem Wert",
               "suffix": "Text nach dem Wert"
             }
@@ -88,6 +93,7 @@
               "icon": "Icon",
               "duration": "Anzeigedauer",
               "format": "Wertformat",
+              "hide_when": "Frame ausblenden, wenn",
               "prefix": "Text vor dem Wert",
               "suffix": "Text nach dem Wert"
             }
@@ -100,6 +106,7 @@
               "icon": "Icon",
               "duration": "Anzeigedauer",
               "format": "Wertformat",
+              "hide_when": "Frame ausblenden, wenn",
               "prefix": "Text vor dem Wert",
               "suffix": "Text nach dem Wert"
             }
@@ -112,6 +119,7 @@
               "icon": "Icon",
               "duration": "Anzeigedauer",
               "format": "Wertformat",
+              "hide_when": "Frame ausblenden, wenn",
               "prefix": "Text vor dem Wert",
               "suffix": "Text nach dem Wert"
             }
@@ -149,6 +157,7 @@
               "icon": "Icon",
               "duration": "Anzeigedauer",
               "format": "Wertformat",
+              "hide_when": "Frame ausblenden, wenn",
               "prefix": "Text vor dem Wert",
               "suffix": "Text nach dem Wert"
             }
@@ -161,6 +170,7 @@
               "icon": "Icon",
               "duration": "Anzeigedauer",
               "format": "Wertformat",
+              "hide_when": "Frame ausblenden, wenn",
               "prefix": "Text vor dem Wert",
               "suffix": "Text nach dem Wert"
             }
@@ -173,6 +183,7 @@
               "icon": "Icon",
               "duration": "Anzeigedauer",
               "format": "Wertformat",
+              "hide_when": "Frame ausblenden, wenn",
               "prefix": "Text vor dem Wert",
               "suffix": "Text nach dem Wert"
             }
@@ -185,6 +196,7 @@
               "icon": "Icon",
               "duration": "Anzeigedauer",
               "format": "Wertformat",
+              "hide_when": "Frame ausblenden, wenn",
               "prefix": "Text vor dem Wert",
               "suffix": "Text nach dem Wert"
             }
@@ -197,6 +209,7 @@
               "icon": "Icon",
               "duration": "Anzeigedauer",
               "format": "Wertformat",
+              "hide_when": "Frame ausblenden, wenn",
               "prefix": "Text vor dem Wert",
               "suffix": "Text nach dem Wert"
             }
@@ -209,6 +222,7 @@
               "icon": "Icon",
               "duration": "Anzeigedauer",
               "format": "Wertformat",
+              "hide_when": "Frame ausblenden, wenn",
               "prefix": "Text vor dem Wert",
               "suffix": "Text nach dem Wert"
             }
@@ -221,6 +235,7 @@
               "icon": "Icon",
               "duration": "Anzeigedauer",
               "format": "Wertformat",
+              "hide_when": "Frame ausblenden, wenn",
               "prefix": "Text vor dem Wert",
               "suffix": "Text nach dem Wert"
             }
@@ -233,6 +248,7 @@
               "icon": "Icon",
               "duration": "Anzeigedauer",
               "format": "Wertformat",
+              "hide_when": "Frame ausblenden, wenn",
               "prefix": "Text vor dem Wert",
               "suffix": "Text nach dem Wert"
             }
@@ -242,6 +258,14 @@
     }
   },
   "selector": {
+    "hide_when": {
+      "options": {
+        "never": "Nie",
+        "zero": "Wert ist 0",
+        "empty": "Wert ist leer oder nicht verfügbar",
+        "zero_or_empty": "Wert ist 0 oder leer/nicht verfügbar"
+      }
+    },
     "value_format": {
       "options": {
         "power": "Leistung",

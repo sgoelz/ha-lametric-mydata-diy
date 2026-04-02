@@ -28,6 +28,7 @@ from .const import (
     CONF_ENTITY_ID,
     CONF_FRAME_COUNT,
     CONF_FORMAT,
+    CONF_HIDE_WHEN,
     CONF_ICON,
     CONF_OUTPUT_PATH,
     CONF_PREFIX,
@@ -39,6 +40,7 @@ from .const import (
     DEFAULT_TITLE,
     DOMAIN,
     FORMAT_OPTIONS,
+    HIDE_WHEN_OPTIONS,
     MAX_FRAME_COUNT,
     frame_key,
 )
@@ -169,6 +171,16 @@ def _frames_schema(defaults: Mapping[str, Any], frame_count: int) -> vol.Schema:
                         )
                     ),
                     vol.Optional(
+                        CONF_HIDE_WHEN,
+                        default=defaults[frame_key(idx, CONF_HIDE_WHEN)],
+                    ): SelectSelector(
+                        SelectSelectorConfig(
+                            options=HIDE_WHEN_OPTIONS,
+                            mode=SelectSelectorMode.DROPDOWN,
+                            translation_key="hide_when",
+                        )
+                    ),
+                    vol.Optional(
                         CONF_PREFIX,
                         default=defaults[frame_key(idx, CONF_PREFIX)],
                     ): TextSelector(),
@@ -217,6 +229,9 @@ def _merge_frame_settings(
         )
         merged[frame_key(idx, CONF_FORMAT)] = str(
             section_input.get(CONF_FORMAT, defaults[frame_key(idx, CONF_FORMAT)])
+        )
+        merged[frame_key(idx, CONF_HIDE_WHEN)] = str(
+            section_input.get(CONF_HIDE_WHEN, defaults[frame_key(idx, CONF_HIDE_WHEN)])
         )
         merged[frame_key(idx, CONF_PREFIX)] = str(
             section_input.get(CONF_PREFIX, defaults[frame_key(idx, CONF_PREFIX)])

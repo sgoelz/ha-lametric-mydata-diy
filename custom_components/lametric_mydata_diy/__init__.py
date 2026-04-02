@@ -27,6 +27,7 @@ from .const import (
     CONF_ENTITY_ID,
     CONF_FRAME_COUNT,
     CONF_FORMAT,
+    CONF_HIDE_WHEN,
     CONF_ICON,
     CONF_OUTPUT_PATH,
     CONF_PREFIX,
@@ -43,6 +44,10 @@ from .const import (
     FORMAT_TEMPERATURE,
     FORMAT_TIME,
     FORMAT_VOLTAGE,
+    HIDE_WHEN_EMPTY,
+    HIDE_WHEN_NEVER,
+    HIDE_WHEN_ZERO,
+    HIDE_WHEN_ZERO_OR_EMPTY,
     MAX_FRAME_COUNT,
     SERVICE_REFRESH,
     frame_key,
@@ -152,6 +157,18 @@ def _format_compact_number(value: float, unit: str) -> str:
     return f"{rounded:.1f}{unit}"
 
 
+def _is_empty_state(raw: str | None) -> bool:
+    """Return whether the raw state should be treated as empty."""
+    normalized = str(raw or "").strip().lower()
+    return normalized in {"", "unknown", "unavailable", "none", "null"}
+
+
+def _is_zero_state(raw: str | None) -> bool:
+    """Return whether the raw state is a numeric zero."""
+    value = _parse_float(raw, None)
+    return value is not None and abs(value) < 1e-9
+
+
 def _format_value(state: State | None, value_format: str) -> str:
     raw = state.state if state else None
 
@@ -228,6 +245,29 @@ def _apply_affixes(value: str, prefix: str, suffix: str) -> str:
     return f"{prefix}{value}{suffix}"
 
 
+def _should_hide_frame(state: State | None, frame: dict[str, Any]) -> bool:
+    """Return whether a frame should be omitted from the payload."""
+    if _frame_uses_current_time(frame):
+        return False
+
+    hide_when = frame[CONF_HIDE_WHEN]
+    if hide_when == HIDE_WHEN_NEVER:
+        return False
+
+    raw = state.state if state else None
+    is_empty = _is_empty_state(raw)
+    is_zero = _is_zero_state(raw)
+
+    if hide_when == HIDE_WHEN_ZERO:
+        return is_zero
+    if hide_when == HIDE_WHEN_EMPTY:
+        return is_empty
+    if hide_when == HIDE_WHEN_ZERO_OR_EMPTY:
+        return is_zero or is_empty
+
+    return False
+
+
 def _entry_config(entry: ConfigEntry) -> dict[str, Any]:
     """Return merged entry config from data and options."""
     config = dict(entry.data)
@@ -247,6 +287,7 @@ def _frame_config(config: dict[str, Any], index: int) -> dict[str, Any]:
         CONF_ICON: int(config.get(frame_key(index, CONF_ICON), defaults[CONF_ICON])),
         CONF_DURATION: int(config.get(frame_key(index, CONF_DURATION), defaults[CONF_DURATION])),
         CONF_FORMAT: config.get(frame_key(index, CONF_FORMAT), defaults[CONF_FORMAT]),
+        CONF_HIDE_WHEN: config.get(frame_key(index, CONF_HIDE_WHEN), defaults[CONF_HIDE_WHEN]),
         CONF_PREFIX: str(config.get(frame_key(index, CONF_PREFIX), defaults[CONF_PREFIX])),
         CONF_SUFFIX: str(config.get(frame_key(index, CONF_SUFFIX), defaults[CONF_SUFFIX])),
     }
@@ -389,6 +430,8 @@ class LaMetricFeedWriter:
             value_format = frame[CONF_FORMAT]
             if not _frame_uses_current_time(frame):
                 state = self.hass.states.get(frame[CONF_ENTITY_ID])
+                if _should_hide_frame(state, frame):
+                    continue
             else:
                 value_format = FORMAT_TIME
 

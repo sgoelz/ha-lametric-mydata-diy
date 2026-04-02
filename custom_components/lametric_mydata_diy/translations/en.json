@@ -28,6 +28,7 @@
               "icon": "Icon",
               "duration": "Display time",
               "format": "Value format",
+              "hide_when": "Hide frame when",
               "prefix": "Text before value",
               "suffix": "Text after value"
             }
@@ -40,6 +41,7 @@
               "icon": "Icon",
               "duration": "Display time",
               "format": "Value format",
+              "hide_when": "Hide frame when",
               "prefix": "Text before value",
               "suffix": "Text after value"
             }
@@ -52,6 +54,7 @@
               "icon": "Icon",
               "duration": "Display time",
               "format": "Value format",
+              "hide_when": "Hide frame when",
               "prefix": "Text before value",
               "suffix": "Text after value"
             }
@@ -64,6 +67,7 @@
               "icon": "Icon",
               "duration": "Display time",
               "format": "Value format",
+              "hide_when": "Hide frame when",
               "prefix": "Text before value",
               "suffix": "Text after value"
             }
@@ -76,6 +80,7 @@
               "icon": "Icon",
               "duration": "Display time",
               "format": "Value format",
+              "hide_when": "Hide frame when",
               "prefix": "Text before value",
               "suffix": "Text after value"
             }
@@ -88,6 +93,7 @@
               "icon": "Icon",
               "duration": "Display time",
               "format": "Value format",
+              "hide_when": "Hide frame when",
               "prefix": "Text before value",
               "suffix": "Text after value"
             }
@@ -100,6 +106,7 @@
               "icon": "Icon",
               "duration": "Display time",
               "format": "Value format",
+              "hide_when": "Hide frame when",
               "prefix": "Text before value",
               "suffix": "Text after value"
             }
@@ -112,6 +119,7 @@
               "icon": "Icon",
               "duration": "Display time",
               "format": "Value format",
+              "hide_when": "Hide frame when",
               "prefix": "Text before value",
               "suffix": "Text after value"
             }
@@ -149,6 +157,7 @@
               "icon": "Icon",
               "duration": "Display time",
               "format": "Value format",
+              "hide_when": "Hide frame when",
               "prefix": "Text before value",
               "suffix": "Text after value"
             }
@@ -161,6 +170,7 @@
               "icon": "Icon",
               "duration": "Display time",
               "format": "Value format",
+              "hide_when": "Hide frame when",
               "prefix": "Text before value",
               "suffix": "Text after value"
             }
@@ -173,6 +183,7 @@
               "icon": "Icon",
               "duration": "Display time",
               "format": "Value format",
+              "hide_when": "Hide frame when",
               "prefix": "Text before value",
               "suffix": "Text after value"
             }
@@ -185,6 +196,7 @@
               "icon": "Icon",
               "duration": "Display time",
               "format": "Value format",
+              "hide_when": "Hide frame when",
               "prefix": "Text before value",
               "suffix": "Text after value"
             }
@@ -197,6 +209,7 @@
               "icon": "Icon",
               "duration": "Display time",
               "format": "Value format",
+              "hide_when": "Hide frame when",
               "prefix": "Text before value",
               "suffix": "Text after value"
             }
@@ -209,6 +222,7 @@
               "icon": "Icon",
               "duration": "Display time",
               "format": "Value format",
+              "hide_when": "Hide frame when",
               "prefix": "Text before value",
               "suffix": "Text after value"
             }
@@ -221,6 +235,7 @@
               "icon": "Icon",
               "duration": "Display time",
               "format": "Value format",
+              "hide_when": "Hide frame when",
               "prefix": "Text before value",
               "suffix": "Text after value"
             }
@@ -233,6 +248,7 @@
               "icon": "Icon",
               "duration": "Display time",
               "format": "Value format",
+              "hide_when": "Hide frame when",
               "prefix": "Text before value",
               "suffix": "Text after value"
             }
@@ -242,6 +258,14 @@
     }
   },
   "selector": {
+    "hide_when": {
+      "options": {
+        "never": "Never",
+        "zero": "Value is 0",
+        "empty": "Value is empty or unavailable",
+        "zero_or_empty": "Value is 0 or empty/unavailable"
+      }
+    },
     "value_format": {
       "options": {
         "power": "Power",

@@ -19,6 +19,7 @@ CONF_PREFIX: Final = "prefix"
 CONF_SUFFIX: Final = "suffix"
 CONF_FRAME_COUNT: Final = "frame_count"
 CONF_CURRENT_TIME: Final = "current_time"
+CONF_HIDE_WHEN: Final = "hide_when"
 
 FORMAT_POWER: Final = "power"
 FORMAT_PERCENT: Final = "percent"
@@ -37,6 +38,17 @@ FORMAT_OPTIONS: Final = [
     FORMAT_CURRENT,
     FORMAT_TIME,
     FORMAT_RAW,
+]
+
+HIDE_WHEN_NEVER: Final = "never"
+HIDE_WHEN_ZERO: Final = "zero"
+HIDE_WHEN_EMPTY: Final = "empty"
+HIDE_WHEN_ZERO_OR_EMPTY: Final = "zero_or_empty"
+HIDE_WHEN_OPTIONS: Final = [
+    HIDE_WHEN_NEVER,
+    HIDE_WHEN_ZERO,
+    HIDE_WHEN_EMPTY,
+    HIDE_WHEN_ZERO_OR_EMPTY,
 ]
 
 # Inferred from LaMetric's official clockface API example icon.
@@ -59,6 +71,7 @@ DEFAULT_FRAMES: Final = (
         CONF_DURATION: 4000,
         CONF_FORMAT: FORMAT_POWER,
         CONF_CURRENT_TIME: False,
+        CONF_HIDE_WHEN: HIDE_WHEN_NEVER,
         CONF_PREFIX: "",
         CONF_SUFFIX: "",
     },
@@ -69,6 +82,7 @@ DEFAULT_FRAMES: Final = (
         CONF_DURATION: 3000,
         CONF_FORMAT: FORMAT_PERCENT,
         CONF_CURRENT_TIME: False,
+        CONF_HIDE_WHEN: HIDE_WHEN_NEVER,
         CONF_PREFIX: "",
         CONF_SUFFIX: "",
     },
@@ -79,6 +93,7 @@ DEFAULT_FRAMES: Final = (
         CONF_DURATION: 3000,
         CONF_FORMAT: FORMAT_PERCENT,
         CONF_CURRENT_TIME: False,
+        CONF_HIDE_WHEN: HIDE_WHEN_NEVER,
         CONF_PREFIX: "",
         CONF_SUFFIX: "",
     },
@@ -89,6 +104,7 @@ DEFAULT_FRAMES: Final = (
         CONF_DURATION: 3000,
         CONF_FORMAT: FORMAT_PERCENT,
         CONF_CURRENT_TIME: False,
+        CONF_HIDE_WHEN: HIDE_WHEN_NEVER,
         CONF_PREFIX: "",
         CONF_SUFFIX: "",
     },
@@ -99,6 +115,7 @@ DEFAULT_FRAMES: Final = (
         CONF_DURATION: 3000,
         CONF_FORMAT: FORMAT_RAW,
         CONF_CURRENT_TIME: False,
+        CONF_HIDE_WHEN: HIDE_WHEN_NEVER,
         CONF_PREFIX: "",
         CONF_SUFFIX: "",
     },
@@ -109,6 +126,7 @@ DEFAULT_FRAMES: Final = (
         CONF_DURATION: 3000,
         CONF_FORMAT: FORMAT_RAW,
         CONF_CURRENT_TIME: False,
+        CONF_HIDE_WHEN: HIDE_WHEN_NEVER,
         CONF_PREFIX: "",
         CONF_SUFFIX: "",
     },
@@ -119,6 +137,7 @@ DEFAULT_FRAMES: Final = (
         CONF_DURATION: 3000,
         CONF_FORMAT: FORMAT_RAW,
         CONF_CURRENT_TIME: False,
+        CONF_HIDE_WHEN: HIDE_WHEN_NEVER,
         CONF_PREFIX: "",
         CONF_SUFFIX: "",
     },
@@ -129,6 +148,7 @@ DEFAULT_FRAMES: Final = (
         CONF_DURATION: 3000,
         CONF_FORMAT: FORMAT_RAW,
         CONF_CURRENT_TIME: False,
+        CONF_HIDE_WHEN: HIDE_WHEN_NEVER,
         CONF_PREFIX: "",
         CONF_SUFFIX: "",
     },

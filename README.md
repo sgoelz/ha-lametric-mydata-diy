@@ -30,6 +30,7 @@ http://<home-assistant>:8123/local/lametric/my_data_diy.json
 - Dedicated `Use current time` preset per frame
 - Iconless text frames by setting icon `0`
 - Optional prefixes and suffixes per frame
+- Optional per-frame hiding for `0`, empty, or unavailable values
 - Automatic refresh on entity state changes
 - Automatic minute-based refresh for time frames
 - Human-friendly German and English labels in setup and options
@@ -66,6 +67,7 @@ The setup runs in two steps:
    - icon ID
    - duration
    - format
+   - optional hide rule for zero or empty values
    - optional prefix/suffix
 
 Active frames are controlled by the configured frame count. In the second step, each frame is shown
@@ -91,6 +93,10 @@ render compact values such as `35.1°C`, `422.1V`, or `0.2A`.
 - `temperature` supports `°C` and `°F`
 - `voltage` supports `V` and `mV`
 - `current` supports `A` and `mA`
+
+Each frame can also be hidden automatically when the source value is `0`, empty, or unavailable.
+This is useful for values that should disappear entirely from the rotation instead of showing
+`0W` or `--`.
 
 The `time` formatter renders the current Home Assistant system time in `HH:MM`.
 
