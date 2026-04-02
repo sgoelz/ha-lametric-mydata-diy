@@ -247,6 +247,9 @@
         "power": "Leistung",
         "percent": "Prozent",
         "energy": "Energie",
+        "temperature": "Temperatur",
+        "voltage": "Spannung",
+        "current": "Stromstärke",
         "time": "Aktuelle Uhrzeit",
         "raw": "Rohwert"
       }

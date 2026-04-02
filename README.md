@@ -6,7 +6,7 @@ This custom integration lets you configure up to eight rotating LaMetric frames 
 
 - an icon ID
 - a duration
-- a display format (`power`, `percent`, `energy`, `time`, `raw`)
+- a display format (`power`, `percent`, `energy`, `temperature`, `voltage`, `current`, `time`, `raw`)
 - an optional prefix
 - an optional suffix
 - output only under Home Assistant's `www/...` folder
@@ -26,7 +26,7 @@ http://<home-assistant>:8123/local/lametric/my_data_diy.json
 - Option flow for later edits
 - Multiple feeds via multiple config entries
 - Up to 8 frames per feed
-- Built-in value formats for `power`, `percent`, `energy`, `time`, and `raw`
+- Built-in value formats for `power`, `percent`, `energy`, `temperature`, `voltage`, `current`, `time`, and `raw`
 - Dedicated `Use current time` preset per frame
 - Iconless text frames by setting icon `0`
 - Optional prefixes and suffixes per frame
@@ -84,6 +84,13 @@ Recommended defaults for a typical energy dashboard setup:
 
 The `energy` formatter reads the entity unit and scales supported values automatically between
 `Wh`, `kWh`, `MWh` and `GWh`.
+
+The `temperature`, `voltage`, and `current` formatters read the entity unit automatically and
+render compact values such as `35.1°C`, `422.1V`, or `0.2A`.
+
+- `temperature` supports `°C` and `°F`
+- `voltage` supports `V` and `mV`
+- `current` supports `A` and `mA`
 
 The `time` formatter renders the current Home Assistant system time in `HH:MM`.
 

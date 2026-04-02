@@ -23,9 +23,21 @@ CONF_CURRENT_TIME: Final = "current_time"
 FORMAT_POWER: Final = "power"
 FORMAT_PERCENT: Final = "percent"
 FORMAT_ENERGY: Final = "energy"
+FORMAT_TEMPERATURE: Final = "temperature"
+FORMAT_VOLTAGE: Final = "voltage"
+FORMAT_CURRENT: Final = "current"
 FORMAT_TIME: Final = "time"
 FORMAT_RAW: Final = "raw"
-FORMAT_OPTIONS: Final = [FORMAT_POWER, FORMAT_PERCENT, FORMAT_ENERGY, FORMAT_TIME, FORMAT_RAW]
+FORMAT_OPTIONS: Final = [
+    FORMAT_POWER,
+    FORMAT_PERCENT,
+    FORMAT_ENERGY,
+    FORMAT_TEMPERATURE,
+    FORMAT_VOLTAGE,
+    FORMAT_CURRENT,
+    FORMAT_TIME,
+    FORMAT_RAW,
+]
 
 # Inferred from LaMetric's official clockface API example icon.
 DEFAULT_TIME_ICON_DATA: Final = (

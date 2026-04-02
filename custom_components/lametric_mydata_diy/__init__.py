@@ -36,10 +36,13 @@ from .const import (
     DEFAULT_OUTPUT_PATH,
     DEFAULT_TIME_ICON_DATA,
     DOMAIN,
+    FORMAT_CURRENT,
     FORMAT_ENERGY,
     FORMAT_PERCENT,
     FORMAT_POWER,
+    FORMAT_TEMPERATURE,
     FORMAT_TIME,
+    FORMAT_VOLTAGE,
     MAX_FRAME_COUNT,
     SERVICE_REFRESH,
     frame_key,
@@ -76,6 +79,59 @@ def _normalize_energy_to_wh(raw: str | None, unit: Any) -> float | None:
     return value * factor
 
 
+def _normalize_temperature(raw: str | None, unit: Any) -> tuple[float, str] | None:
+    """Convert a supported temperature value to a display tuple."""
+    normalized_unit = str(unit or "").strip().lower().replace(" ", "")
+    display_unit = {
+        "°c": "°C",
+        "c": "°C",
+        "°f": "°F",
+        "f": "°F",
+    }.get(normalized_unit)
+    if display_unit is None:
+        return None
+
+    value = _parse_float(raw, None)
+    if value is None:
+        return None
+
+    return value, display_unit
+
+
+def _normalize_voltage(raw: str | None, unit: Any) -> tuple[float, str] | None:
+    """Convert a supported voltage value to volts."""
+    normalized_unit = str(unit or "").strip().lower().replace(" ", "")
+    factor = {
+        "v": 1,
+        "mv": 0.001,
+    }.get(normalized_unit)
+    if factor is None:
+        return None
+
+    value = _parse_float(raw, None)
+    if value is None:
+        return None
+
+    return value * factor, "V"
+
+
+def _normalize_current(raw: str | None, unit: Any) -> tuple[float, str] | None:
+    """Convert a supported current value to amps."""
+    normalized_unit = str(unit or "").strip().lower().replace(" ", "")
+    factor = {
+        "a": 1,
+        "ma": 0.001,
+    }.get(normalized_unit)
+    if factor is None:
+        return None
+
+    value = _parse_float(raw, None)
+    if value is None:
+        return None
+
+    return value * factor, "A"
+
+
 def _format_energy(energy_wh: float) -> str:
     """Format an energy value using compact units."""
     magnitude = abs(energy_wh)
@@ -86,6 +142,14 @@ def _format_energy(energy_wh: float) -> str:
     if magnitude >= 1_000:
         return f"{energy_wh / 1_000:.1f}kWh"
     return f"{round(energy_wh):.0f}Wh"
+
+
+def _format_compact_number(value: float, unit: str) -> str:
+    """Format a unit-bearing value with at most one decimal place."""
+    rounded = round(value, 1)
+    if rounded.is_integer():
+        return f"{int(rounded)}{unit}"
+    return f"{rounded:.1f}{unit}"
 
 
 def _format_value(state: State | None, value_format: str) -> str:
@@ -116,6 +180,42 @@ def _format_value(state: State | None, value_format: str) -> str:
         if energy_wh is None:
             return str(raw)
         return _format_energy(energy_wh)
+
+    if value_format == FORMAT_TEMPERATURE:
+        if raw in (None, "", "unknown", "unavailable"):
+            return "--"
+        normalized = _normalize_temperature(
+            raw,
+            state.attributes.get("unit_of_measurement") if state else None,
+        )
+        if normalized is None:
+            return str(raw)
+        value, unit = normalized
+        return _format_compact_number(value, unit)
+
+    if value_format == FORMAT_VOLTAGE:
+        if raw in (None, "", "unknown", "unavailable"):
+            return "--"
+        normalized = _normalize_voltage(
+            raw,
+            state.attributes.get("unit_of_measurement") if state else None,
+        )
+        if normalized is None:
+            return str(raw)
+        value, unit = normalized
+        return _format_compact_number(value, unit)
+
+    if value_format == FORMAT_CURRENT:
+        if raw in (None, "", "unknown", "unavailable"):
+            return "--"
+        normalized = _normalize_current(
+            raw,
+            state.attributes.get("unit_of_measurement") if state else None,
+        )
+        if normalized is None:
+            return str(raw)
+        value, unit = normalized
+        return _format_compact_number(value, unit)
 
     if raw in (None, "", "unknown", "unavailable"):
         return "--"

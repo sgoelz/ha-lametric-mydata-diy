@@ -247,6 +247,9 @@
         "power": "Power",
         "percent": "Percentage",
         "energy": "Energy",
+        "temperature": "Temperature",
+        "voltage": "Voltage",
+        "current": "Current",
         "time": "Current time",
         "raw": "Raw value"
       }
