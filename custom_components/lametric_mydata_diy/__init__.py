@@ -31,6 +31,7 @@ from .const import (
     CONF_FRAME_COUNT,
     CONF_FORMAT,
     CONF_HIDE_WHEN,
+    CONF_HTTP_SLUG,
     CONF_ICON,
     CONF_OUTPUT_PATH,
     CONF_PREFIX,
@@ -59,6 +60,7 @@ from .const import (
     HTTP_VIEW_BASE,
     frame_key,
 )
+from .util import default_http_slug
 
 _LOGGER = logging.getLogger(__name__)
 Unsub = Callable[[], None]
@@ -300,6 +302,36 @@ def _writers(hass: HomeAssistant) -> dict[str, "LaMetricFeedWriter"]:
     return _domain_data(hass)[DATA_WRITERS]
 
 
+def _http_slug_from_config(config: dict[str, Any], fallback_entry_id: str) -> str:
+    """Return the configured HTTP slug or a generated fallback."""
+    return default_http_slug(
+        config.get(CONF_HTTP_SLUG) or config.get("title") or fallback_entry_id,
+        fallback_entry_id,
+    )
+
+
+def _unique_http_slug(
+    hass: HomeAssistant,
+    preferred_slug: str,
+    exclude_entry_id: str | None = None,
+) -> str:
+    """Return a unique HTTP slug across config entries."""
+    used_slugs: set[str] = set()
+    for entry in hass.config_entries.async_entries(DOMAIN):
+        if entry.entry_id == exclude_entry_id:
+            continue
+        config = _entry_config(entry)
+        used_slugs.add(_http_slug_from_config(config, entry.entry_id))
+
+    if preferred_slug not in used_slugs:
+        return preferred_slug
+
+    index = 2
+    while f"{preferred_slug}-{index}" in used_slugs:
+        index += 1
+    return f"{preferred_slug}-{index}"
+
+
 def _frame_config(config: dict[str, Any], index: int) -> dict[str, Any]:
     """Extract one frame config from flattened config-entry data."""
     defaults = DEFAULT_FRAMES[index - 1]
@@ -383,7 +415,12 @@ class LaMetricFeedWriter:
     @property
     def http_path(self) -> str:
         """Return the direct HTTP endpoint path for this feed."""
-        return f"{HTTP_VIEW_BASE}/{self.entry.entry_id}"
+        return f"{HTTP_VIEW_BASE}/{self.http_slug}"
+
+    @property
+    def http_slug(self) -> str:
+        """Return the configured HTTP slug for this feed."""
+        return _http_slug_from_config(self.config, self.entry.entry_id)
 
     @property
     def frame_count(self) -> int:
@@ -527,10 +564,20 @@ class LaMetricFeedWriter:
         self._delayed_unsub = async_call_later(self.hass, 15, _delayed_write)
 
 
+def _find_http_writer(hass: HomeAssistant, slug: str) -> LaMetricFeedWriter | None:
+    """Return the HTTP-mode writer for a slug or legacy entry ID path."""
+    for writer in _writers(hass).values():
+        if writer.delivery_mode != DELIVERY_MODE_HTTP:
+            continue
+        if slug in {writer.http_slug, writer.entry.entry_id}:
+            return writer
+    return None
+
+
 class LaMetricMyDataDIYFeedView(HomeAssistantView):
     """Serve a LaMetric feed directly over HTTP."""
 
-    url = f"{HTTP_VIEW_BASE}/{{entry_id}}"
+    url = f"{HTTP_VIEW_BASE}/{{slug}}"
     name = f"api:{DOMAIN}:feed"
     requires_auth = False
 
@@ -538,12 +585,12 @@ class LaMetricMyDataDIYFeedView(HomeAssistantView):
         """Initialize the HTTP view."""
         self.hass = hass
 
-    async def get(self, request: web.Request, entry_id: str | None = None) -> web.Response:
+    async def get(self, request: web.Request, slug: str | None = None) -> web.Response:
         """Return the current payload for one HTTP-mode feed."""
         del request
-        entry_id = entry_id or ""
-        writer = _writers(self.hass).get(entry_id)
-        if writer is None or writer.delivery_mode != DELIVERY_MODE_HTTP:
+        slug = slug or ""
+        writer = _find_http_writer(self.hass, slug)
+        if writer is None:
             raise web.HTTPNotFound()
 
         try:
@@ -628,13 +675,21 @@ async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 data[flat_key] = default
                 updated = True
 
+    if CONF_HTTP_SLUG not in data and CONF_HTTP_SLUG not in options:
+        data[CONF_HTTP_SLUG] = _unique_http_slug(
+            hass,
+            _http_slug_from_config(_entry_config(entry), entry.entry_id),
+            exclude_entry_id=entry.entry_id,
+        )
+        updated = True
+
     if updated:
         hass.config_entries.async_update_entry(
             entry,
             data=data,
             options=options,
             version=1,
-            minor_version=3,
+            minor_version=4,
         )
 
     return True

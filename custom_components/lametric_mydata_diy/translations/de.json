@@ -4,15 +4,19 @@
       "output_path_required": "Bitte gib einen Ausgabepfad ein.",
       "output_path_must_be_inside_www": "Der Ausgabepfad muss innerhalb des Home-Assistant-www-Ordners liegen.",
       "output_path_must_end_with_json": "Der Ausgabepfad muss mit .json enden.",
+      "http_slug_required": "Bitte gib einen HTTP-Pfad-Slug ein.",
+      "http_slug_invalid": "Der HTTP-Pfad-Slug muss Buchstaben oder Zahlen enthalten.",
+      "http_slug_not_unique": "Dieser HTTP-Pfad-Slug wird bereits von einem anderen Feed verwendet.",
       "frame_count_invalid": "Die Anzahl aktiver Frames ist ungültig."
     },
     "step": {
       "user": {
         "title": "Allgemeine Einstellungen",
-        "description": "Konfiguriere den Ausgabemodus, den Feed-Namen, den Dateipfad und die Anzahl der Frames.",
+        "description": "Konfiguriere den Ausgabemodus, den Feed-Namen, den HTTP-Pfad-Slug oder Dateipfad und die Anzahl der Frames.",
         "data": {
           "delivery_mode": "Ausgabemodus",
           "title": "Feed-Name",
+          "http_slug": "HTTP-Pfad-Slug",
           "output_path": "Pfad zur Feed-Datei (Dateimodus)",
           "frame_count": "Anzahl der Frames"
         }
@@ -142,15 +146,19 @@
       "output_path_required": "Bitte gib einen Ausgabepfad ein.",
       "output_path_must_be_inside_www": "Der Ausgabepfad muss innerhalb des Home-Assistant-www-Ordners liegen.",
       "output_path_must_end_with_json": "Der Ausgabepfad muss mit .json enden.",
+      "http_slug_required": "Bitte gib einen HTTP-Pfad-Slug ein.",
+      "http_slug_invalid": "Der HTTP-Pfad-Slug muss Buchstaben oder Zahlen enthalten.",
+      "http_slug_not_unique": "Dieser HTTP-Pfad-Slug wird bereits von einem anderen Feed verwendet.",
       "frame_count_invalid": "Die Anzahl aktiver Frames ist ungültig."
     },
     "step": {
       "init": {
         "title": "Allgemeine Einstellungen",
-        "description": "Passe den Ausgabemodus, den Feed-Namen, den Dateipfad und die Anzahl der Frames an.",
+        "description": "Passe den Ausgabemodus, den Feed-Namen, den HTTP-Pfad-Slug oder Dateipfad und die Anzahl der Frames an.",
         "data": {
           "delivery_mode": "Ausgabemodus",
           "title": "Feed-Name",
+          "http_slug": "HTTP-Pfad-Slug",
           "output_path": "Pfad zur Feed-Datei (Dateimodus)",
           "frame_count": "Anzahl der Frames"
         }

@@ -4,15 +4,19 @@
       "output_path_required": "Please enter an output path.",
       "output_path_must_be_inside_www": "The output path must be inside Home Assistant's www folder.",
       "output_path_must_end_with_json": "The output path must end with .json.",
+      "http_slug_required": "Please enter an HTTP path slug.",
+      "http_slug_invalid": "The HTTP path slug must contain letters or numbers.",
+      "http_slug_not_unique": "This HTTP path slug is already used by another feed.",
       "frame_count_invalid": "The frame count is invalid."
     },
     "step": {
       "user": {
         "title": "General settings",
-        "description": "Configure the delivery mode, feed name, file path and number of frames.",
+        "description": "Configure the delivery mode, feed name, HTTP path slug or file path, and number of frames.",
         "data": {
           "delivery_mode": "Delivery mode",
           "title": "Feed name",
+          "http_slug": "HTTP path slug",
           "output_path": "Feed file path (file mode)",
           "frame_count": "Number of frames"
         }
@@ -142,15 +146,19 @@
       "output_path_required": "Please enter an output path.",
       "output_path_must_be_inside_www": "The output path must be inside Home Assistant's www folder.",
       "output_path_must_end_with_json": "The output path must end with .json.",
+      "http_slug_required": "Please enter an HTTP path slug.",
+      "http_slug_invalid": "The HTTP path slug must contain letters or numbers.",
+      "http_slug_not_unique": "This HTTP path slug is already used by another feed.",
       "frame_count_invalid": "The frame count is invalid."
     },
     "step": {
       "init": {
         "title": "General settings",
-        "description": "Adjust the delivery mode, feed name, file path and number of frames.",
+        "description": "Adjust the delivery mode, feed name, HTTP path slug or file path, and number of frames.",
         "data": {
           "delivery_mode": "Delivery mode",
           "title": "Feed name",
+          "http_slug": "HTTP path slug",
           "output_path": "Feed file path (file mode)",
           "frame_count": "Number of frames"
         }

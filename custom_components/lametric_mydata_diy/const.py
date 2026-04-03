@@ -9,6 +9,7 @@ NAME: Final = "LaMetric My Data DIY"
 SERVICE_REFRESH: Final = "refresh"
 
 CONF_DELIVERY_MODE: Final = "delivery_mode"
+CONF_HTTP_SLUG: Final = "http_slug"
 CONF_PRESET: Final = "preset"
 CONF_TITLE: Final = "title"
 CONF_OUTPUT_PATH: Final = "output_path"

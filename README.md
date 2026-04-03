@@ -18,10 +18,10 @@ The default file mode writes a JSON file into Home Assistant's `www/...` folder,
 http://<home-assistant>:8123/local/lametric/my_data_diy.json
 ```
 
-Milestone 1 of the HTTP mode also supports a direct endpoint per config entry:
+HTTP mode also supports a direct endpoint per feed:
 
 ```text
-http://<home-assistant>:8123/api/lametric_mydata_diy/<entry_id>
+http://<home-assistant>:8123/api/lametric_mydata_diy/pv-dashboard
 ```
 
 ## Features
@@ -70,6 +70,7 @@ The setup runs in two steps:
    - delivery mode
    - feed title
    - one output path inside your Home Assistant config directory for file mode (default: `www/lametric/my_data_diy.json`)
+   - one HTTP path slug for HTTP mode (for example `pv-dashboard`)
    - active frame count
 2. Frame settings for the active frames only
    - optional preset
@@ -141,9 +142,9 @@ This is the default mode.
 
 This mode serves the payload directly from the integration without writing a file.
 
-- feed is reachable under `/api/lametric_mydata_diy/<entry_id>`
-- designed for local-network usage in Milestone 1
-- the endpoint path currently uses the Home Assistant config entry ID
+- feed is reachable under `/api/lametric_mydata_diy/<slug>`
+- designed for local-network usage inside your Home Assistant instance
+- you choose the HTTP path slug in the config flow, for example `pv-dashboard`
 - no token-based public sharing is included yet
 
 The rendering logic is the same in both modes, including current-time frames and hide rules.
@@ -187,6 +188,6 @@ Clock-frame example:
 ## Roadmap
 
 - configurable decimal precision for generic numeric values
-- optional direct HTTP view instead of file output
+- diagnostics for file mode vs. HTTP mode
 - diagnostics and repair flow
 - richer icon guidance or a lightweight icon picker

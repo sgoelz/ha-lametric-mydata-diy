@@ -29,6 +29,7 @@ from .const import (
     CONF_ENTITY_ID,
     CONF_FRAME_COUNT,
     CONF_FORMAT,
+    CONF_HTTP_SLUG,
     CONF_PRESET,
     CONF_HIDE_WHEN,
     CONF_ICON,
@@ -41,6 +42,8 @@ from .const import (
     DEFAULT_FRAMES,
     DEFAULT_OUTPUT_PATH,
     DEFAULT_TITLE,
+    DELIVERY_MODE_FILE,
+    DELIVERY_MODE_HTTP,
     DELIVERY_MODE_OPTIONS,
     DOMAIN,
     FRAME_PRESET_VALUES,
@@ -51,6 +54,7 @@ from .const import (
     PRESET_OPTIONS,
     frame_key,
 )
+from .util import default_http_slug, slugify_http_value
 
 
 def _normalize_title(raw: Any, fallback: str = DEFAULT_TITLE) -> str:
@@ -93,6 +97,10 @@ def _defaults_from_mapping(mapping: Mapping[str, Any] | None) -> dict[str, Any]:
     }
     if mapping:
         defaults.update(mapping)
+    defaults.setdefault(
+        CONF_HTTP_SLUG,
+        default_http_slug(defaults.get(CONF_TITLE), "lametric-feed"),
+    )
 
     for idx, frame in enumerate(DEFAULT_FRAMES, start=1):
         for key, value in frame.items():
@@ -103,39 +111,66 @@ def _defaults_from_mapping(mapping: Mapping[str, Any] | None) -> dict[str, Any]:
 
 def _general_schema(defaults: Mapping[str, Any]) -> vol.Schema:
     """Build the first-step schema."""
-    return vol.Schema(
-        {
+    selected_mode = str(defaults.get(CONF_DELIVERY_MODE, DEFAULT_DELIVERY_MODE))
+    schema: dict[Any, Any] = {
+        vol.Required(
+            CONF_DELIVERY_MODE,
+            default=selected_mode,
+        ): SelectSelector(
+            SelectSelectorConfig(
+                options=DELIVERY_MODE_OPTIONS,
+                mode=SelectSelectorMode.DROPDOWN,
+                translation_key="delivery_mode",
+            )
+        ),
+        vol.Required(
+            CONF_TITLE,
+            default=defaults.get(CONF_TITLE, DEFAULT_TITLE),
+        ): TextSelector(),
+    }
+    if selected_mode == DELIVERY_MODE_HTTP:
+        schema[
             vol.Required(
-                CONF_DELIVERY_MODE,
-                default=defaults.get(CONF_DELIVERY_MODE, DEFAULT_DELIVERY_MODE),
-            ): SelectSelector(
-                SelectSelectorConfig(
-                    options=DELIVERY_MODE_OPTIONS,
-                    mode=SelectSelectorMode.DROPDOWN,
-                    translation_key="delivery_mode",
-                )
-            ),
-            vol.Required(
-                CONF_TITLE,
-                default=defaults.get(CONF_TITLE, DEFAULT_TITLE),
-            ): TextSelector(),
+                CONF_HTTP_SLUG,
+                default=defaults.get(
+                    CONF_HTTP_SLUG,
+                    default_http_slug(defaults.get(CONF_TITLE), "lametric-feed"),
+                ),
+            )
+        ] = TextSelector()
+    else:
+        schema[
             vol.Required(
                 CONF_OUTPUT_PATH,
                 default=defaults.get(CONF_OUTPUT_PATH, DEFAULT_OUTPUT_PATH),
-            ): TextSelector(),
-            vol.Required(
-                CONF_FRAME_COUNT,
-                default=defaults.get(CONF_FRAME_COUNT, DEFAULT_FRAME_COUNT),
-            ): NumberSelector(
-                NumberSelectorConfig(
-                    min=1,
-                    max=MAX_FRAME_COUNT,
-                    step=1,
-                    mode=NumberSelectorMode.BOX,
-                )
-            ),
-        }
+            )
+        ] = TextSelector()
+
+    schema[
+        vol.Required(
+            CONF_FRAME_COUNT,
+            default=defaults.get(CONF_FRAME_COUNT, DEFAULT_FRAME_COUNT),
+        )
+    ] = NumberSelector(
+        NumberSelectorConfig(
+            min=1,
+            max=MAX_FRAME_COUNT,
+            step=1,
+            mode=NumberSelectorMode.BOX,
+        )
     )
+    return vol.Schema(schema)
+
+
+def _normalize_http_slug(raw: Any) -> str:
+    """Normalize and validate an HTTP endpoint slug."""
+    value = str(raw or "").strip()
+    if not value:
+        raise vol.Invalid("http_slug_required")
+    slug = slugify_http_value(value)
+    if not slug:
+        raise vol.Invalid("http_slug_invalid")
+    return slug
 
 
 def _frames_schema(defaults: Mapping[str, Any], frame_count: int) -> vol.Schema:
@@ -308,15 +343,32 @@ def _merge_frame_settings(
     return merged
 
 
+def _entry_slug(mapping: Mapping[str, Any] | None) -> str:
+    """Return the stored HTTP slug for one config mapping."""
+    defaults = _defaults_from_mapping(mapping)
+    return str(defaults.get(CONF_HTTP_SLUG, "")).strip()
+
+
 class LaMetricMyDataDIYConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for LaMetric My Data DIY."""
 
     VERSION = 1
-    MINOR_VERSION = 3
+    MINOR_VERSION = 4
 
     def __init__(self) -> None:
         """Initialize the config flow."""
         self._pending_data: dict[str, Any] | None = None
+
+    def _slug_in_use(self, slug: str) -> bool:
+        """Return whether the HTTP slug is already used by another entry."""
+        for entry in self.hass.config_entries.async_entries(DOMAIN):
+            entry_data = dict(entry.data)
+            entry_data.update(entry.options)
+            if str(entry_data.get(CONF_DELIVERY_MODE, DEFAULT_DELIVERY_MODE)) != DELIVERY_MODE_HTTP:
+                continue
+            if _entry_slug(entry_data) == slug:
+                return True
+        return False
 
     @staticmethod
     def async_get_options_flow(
@@ -333,14 +385,37 @@ class LaMetricMyDataDIYConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             try:
-                self._pending_data = {
-                    CONF_DELIVERY_MODE: str(
-                        user_input.get(CONF_DELIVERY_MODE, DEFAULT_DELIVERY_MODE)
-                    ),
-                    CONF_TITLE: _normalize_title(user_input.get(CONF_TITLE)),
-                    CONF_OUTPUT_PATH: _normalize_output_path(user_input.get(CONF_OUTPUT_PATH)),
-                    CONF_FRAME_COUNT: _coerce_frame_count(user_input.get(CONF_FRAME_COUNT)),
-                }
+                defaults = _defaults_from_mapping(self._pending_data)
+                selected_mode = str(
+                    user_input.get(CONF_DELIVERY_MODE, defaults.get(CONF_DELIVERY_MODE, DEFAULT_DELIVERY_MODE))
+                )
+                title = _normalize_title(user_input.get(CONF_TITLE))
+                pending_data = dict(defaults)
+                pending_data[CONF_DELIVERY_MODE] = selected_mode
+                pending_data[CONF_TITLE] = title
+                pending_data[CONF_FRAME_COUNT] = _coerce_frame_count(user_input.get(CONF_FRAME_COUNT))
+
+                if selected_mode == DELIVERY_MODE_HTTP:
+                    if selected_mode != defaults.get(CONF_DELIVERY_MODE):
+                        pending_data[CONF_HTTP_SLUG] = default_http_slug(title, "lametric-feed")
+                        self._pending_data = pending_data
+                        return self.async_show_form(
+                            step_id="user",
+                            data_schema=_general_schema(_defaults_from_mapping(self._pending_data)),
+                        )
+                    pending_data[CONF_HTTP_SLUG] = _normalize_http_slug(user_input.get(CONF_HTTP_SLUG))
+                    if self._slug_in_use(pending_data[CONF_HTTP_SLUG]):
+                        raise vol.Invalid("http_slug_not_unique")
+                else:
+                    if selected_mode != defaults.get(CONF_DELIVERY_MODE):
+                        self._pending_data = pending_data
+                        return self.async_show_form(
+                            step_id="user",
+                            data_schema=_general_schema(_defaults_from_mapping(self._pending_data)),
+                        )
+                    pending_data[CONF_OUTPUT_PATH] = _normalize_output_path(user_input.get(CONF_OUTPUT_PATH))
+
+                self._pending_data = pending_data
                 return await self.async_step_frames()
             except vol.Invalid as err:
                 errors["base"] = str(err)
@@ -380,6 +455,19 @@ class LaMetricMyDataDIYOptionsFlow(config_entries.OptionsFlow):
         self._config_entry = config_entry
         self._pending_options: dict[str, Any] | None = None
 
+    def _slug_in_use(self, slug: str) -> bool:
+        """Return whether the HTTP slug is already used by another entry."""
+        for entry in self.hass.config_entries.async_entries(DOMAIN):
+            if entry.entry_id == self._config_entry.entry_id:
+                continue
+            entry_data = dict(entry.data)
+            entry_data.update(entry.options)
+            if str(entry_data.get(CONF_DELIVERY_MODE, DEFAULT_DELIVERY_MODE)) != DELIVERY_MODE_HTTP:
+                continue
+            if _entry_slug(entry_data) == slug:
+                return True
+        return False
+
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
     ) -> config_entries.ConfigFlowResult:
@@ -390,20 +478,45 @@ class LaMetricMyDataDIYOptionsFlow(config_entries.OptionsFlow):
 
         if user_input is not None:
             try:
-                self._pending_options = dict(defaults)
-                self._pending_options[CONF_DELIVERY_MODE] = str(
-                    user_input.get(CONF_DELIVERY_MODE, DEFAULT_DELIVERY_MODE)
+                selected_mode = str(
+                    user_input.get(CONF_DELIVERY_MODE, defaults.get(CONF_DELIVERY_MODE, DEFAULT_DELIVERY_MODE))
                 )
-                self._pending_options[CONF_TITLE] = _normalize_title(
+                title = _normalize_title(
                     user_input.get(CONF_TITLE),
                     self._config_entry.title,
                 )
-                self._pending_options[CONF_OUTPUT_PATH] = _normalize_output_path(
-                    user_input.get(CONF_OUTPUT_PATH)
-                )
+                self._pending_options = dict(defaults)
+                self._pending_options[CONF_DELIVERY_MODE] = selected_mode
+                self._pending_options[CONF_TITLE] = title
                 self._pending_options[CONF_FRAME_COUNT] = _coerce_frame_count(
                     user_input.get(CONF_FRAME_COUNT)
                 )
+
+                if selected_mode == DELIVERY_MODE_HTTP:
+                    if selected_mode != defaults.get(CONF_DELIVERY_MODE):
+                        self._pending_options[CONF_HTTP_SLUG] = default_http_slug(title, "lametric-feed")
+                        view_defaults = dict(defaults)
+                        view_defaults.update(self._pending_options)
+                        return self.async_show_form(
+                            step_id="init",
+                            data_schema=_general_schema(view_defaults),
+                        )
+                    self._pending_options[CONF_HTTP_SLUG] = _normalize_http_slug(
+                        user_input.get(CONF_HTTP_SLUG)
+                    )
+                    if self._slug_in_use(self._pending_options[CONF_HTTP_SLUG]):
+                        raise vol.Invalid("http_slug_not_unique")
+                else:
+                    if selected_mode != defaults.get(CONF_DELIVERY_MODE):
+                        view_defaults = dict(defaults)
+                        view_defaults.update(self._pending_options)
+                        return self.async_show_form(
+                            step_id="init",
+                            data_schema=_general_schema(view_defaults),
+                        )
+                    self._pending_options[CONF_OUTPUT_PATH] = _normalize_output_path(
+                        user_input.get(CONF_OUTPUT_PATH)
+                    )
                 return await self.async_step_frames()
             except vol.Invalid as err:
                 errors["base"] = str(err)
