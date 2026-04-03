@@ -35,7 +35,7 @@ from .const import (
     DEFAULT_FRAME_COUNT,
     DEFAULT_FRAMES,
     DEFAULT_OUTPUT_PATH,
-    DEFAULT_TIME_ICON_DATA,
+    DEFAULT_TIME_ICON,
     DOMAIN,
     FORMAT_CURRENT,
     FORMAT_ENERGY,
@@ -334,6 +334,7 @@ class LaMetricFeedWriter:
         self.entry = entry
         self._unsubs: list[Unsub] = []
         self._delayed_unsub: Unsub | None = None
+        self._started_unsub: Unsub | None = None
 
     @property
     def config(self) -> dict[str, Any]:
@@ -395,11 +396,9 @@ class LaMetricFeedWriter:
                     second=0,
                 )
             )
-        self._unsubs.append(
-            self.hass.bus.async_listen_once(
-                EVENT_HOMEASSISTANT_STARTED,
-                self._handle_started,
-            )
+        self._started_unsub = self.hass.bus.async_listen_once(
+            EVENT_HOMEASSISTANT_STARTED,
+            self._handle_started,
         )
         await self.async_write_payload()
 
@@ -408,6 +407,9 @@ class LaMetricFeedWriter:
         if self._delayed_unsub:
             self._delayed_unsub()
             self._delayed_unsub = None
+        if self._started_unsub:
+            self._started_unsub()
+            self._started_unsub = None
         while self._unsubs:
             self._unsubs.pop()()
 
@@ -441,7 +443,7 @@ class LaMetricFeedWriter:
                 "duration": frame[CONF_DURATION],
             }
             if _frame_uses_current_time(frame) and frame[CONF_ICON] == 0:
-                payload_frame["icon"] = DEFAULT_TIME_ICON_DATA
+                payload_frame["icon"] = DEFAULT_TIME_ICON
             elif frame[CONF_ICON] > 0:
                 payload_frame["icon"] = frame[CONF_ICON]
             payload["frames"].append(payload_frame)
@@ -461,6 +463,7 @@ class LaMetricFeedWriter:
     async def _handle_started(self, event: Event) -> None:
         """Delay first write slightly after startup."""
         del event
+        self._started_unsub = None
 
         async def _delayed_write(_now: Any) -> None:
             self._delayed_unsub = None

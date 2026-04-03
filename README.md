@@ -7,6 +7,7 @@ This custom integration lets you configure up to eight rotating LaMetric frames 
 - an icon ID
 - a duration
 - a display format (`power`, `percent`, `energy`, `temperature`, `voltage`, `current`, `time`, `raw`)
+- an optional preset for common frame types
 - an optional prefix
 - an optional suffix
 - output only under Home Assistant's `www/...` folder
@@ -23,6 +24,7 @@ http://<home-assistant>:8123/local/lametric/my_data_diy.json
 - UI-based configuration via Config Flow
 - Two-step config flow with a cleaner separation between general settings and frame details
 - Collapsible per-frame sections in setup and options
+- One-click frame presets for common LaMetric use cases
 - Option flow for later edits
 - Multiple feeds via multiple config entries
 - Up to 8 frames per feed
@@ -62,6 +64,7 @@ The setup runs in two steps:
    - one output path inside your Home Assistant config directory (default: `www/lametric/my_data_diy.json`)
    - active frame count
 2. Frame settings for the active frames only
+   - optional preset
    - current-time toggle
    - entity field
    - icon ID
@@ -71,7 +74,14 @@ The setup runs in two steps:
    - optional prefix/suffix
 
 Active frames are controlled by the configured frame count. In the second step, each frame is shown
-as its own collapsible section. Setting icon `0` removes the icon and keeps the text.
+as its own collapsible section. Setting icon `0` removes the icon and keeps the text for regular
+value frames.
+
+Frame presets help fill common combinations quickly. They can prefill icon and format suggestions
+for common use cases such as power, battery percentage, energy, temperature, voltage, current, and
+clock frames. Presets are apply-on-save helpers: they set the actual frame fields when you save, but
+the preset selector itself is not stored and will show `No preset` / `Keine Vorlage` when you reopen
+the options. The applied values remain editable afterwards.
 
 You can browse official LaMetric icons in the [LaMetric icon gallery](https://developer.lametric.com/icons).
 
@@ -82,7 +92,7 @@ Recommended defaults for a typical energy dashboard setup:
 - `sensor.skoda_enyaq_batteriestand` + icon `2809` + `percent`
 - `sensor.batteriestand` + icon `2818` + `percent`
 - `sensor.daily_imported_energy` + icon `7959` + `energy`
-- no entity + icon `0` + `time`
+- no entity + icon `7645` + `time`
 
 The `energy` formatter reads the entity unit and scales supported values automatically between
 `Wh`, `kWh`, `MWh` and `GWh`.
@@ -104,7 +114,8 @@ The `Use current time` preset is the simplest way to configure a clock frame:
 
 - no entity is required
 - the feed refreshes automatically every minute
-- if the icon is set to `0`, the integration uses a built-in LaMetric-style clock icon
+- the default clock icon is `7645`
+- if a time frame is saved with icon `0`, the integration falls back to the default clock icon
 
 You can also keep using the plain `time` value format if you prefer.
 
@@ -160,14 +171,13 @@ Clock-frame example:
 
 ```json
 {"frames":[
-  {"text":"11:42","duration":3000,"icon":"data:image/png;base64,..."}
+  {"text":"11:42","duration":3000,"icon":7645}
 ]}
 ```
 
 ## Roadmap
 
-- additional formatters such as `temperature`, `voltage`, `current`, or configurable decimals
-- animated LaMetric icon codes in addition to numeric icon IDs
+- configurable decimal precision for generic numeric values
 - optional direct HTTP view instead of file output
 - diagnostics and repair flow
-- per-frame icon previews or curated presets
+- richer icon guidance or a lightweight icon picker

@@ -28,6 +28,7 @@ from .const import (
     CONF_ENTITY_ID,
     CONF_FRAME_COUNT,
     CONF_FORMAT,
+    CONF_PRESET,
     CONF_HIDE_WHEN,
     CONF_ICON,
     CONF_OUTPUT_PATH,
@@ -39,9 +40,12 @@ from .const import (
     DEFAULT_OUTPUT_PATH,
     DEFAULT_TITLE,
     DOMAIN,
+    FRAME_PRESET_VALUES,
     FORMAT_OPTIONS,
     HIDE_WHEN_OPTIONS,
     MAX_FRAME_COUNT,
+    PRESET_NONE,
+    PRESET_OPTIONS,
     frame_key,
 )
 
@@ -130,6 +134,16 @@ def _frames_schema(defaults: Mapping[str, Any], frame_count: int) -> vol.Schema:
             vol.Schema(
                 {
                     vol.Optional(
+                        CONF_PRESET,
+                        default=PRESET_NONE,
+                    ): SelectSelector(
+                        SelectSelectorConfig(
+                            options=PRESET_OPTIONS,
+                            mode=SelectSelectorMode.DROPDOWN,
+                            translation_key="frame_preset",
+                        )
+                    ),
+                    vol.Optional(
                         CONF_CURRENT_TIME,
                         default=defaults[frame_key(idx, CONF_CURRENT_TIME)],
                     ): BooleanSelector(),
@@ -196,6 +210,39 @@ def _frames_schema(defaults: Mapping[str, Any], frame_count: int) -> vol.Schema:
     return vol.Schema(schema)
 
 
+def _apply_frame_preset(
+    defaults: Mapping[str, Any],
+    section_input: Mapping[str, Any],
+    idx: int,
+) -> dict[str, Any]:
+    """Apply a selected frame preset without clobbering explicit overrides."""
+    preset = str(section_input.get(CONF_PRESET, PRESET_NONE))
+    if preset == PRESET_NONE:
+        return dict(section_input)
+
+    preset_values = FRAME_PRESET_VALUES.get(preset)
+    if preset_values is None:
+        return dict(section_input)
+
+    applied = dict(section_input)
+    field_aliases = {CONF_ENTITY_ID: "entity"}
+
+    for key, preset_value in preset_values.items():
+        form_key = field_aliases.get(key, key)
+        default_value = defaults[frame_key(idx, key)]
+        current_value = section_input.get(form_key, default_value)
+
+        # The clock preset should always clear the entity to avoid stale values.
+        if key == CONF_ENTITY_ID:
+            applied[form_key] = preset_value
+            continue
+
+        if current_value == default_value:
+            applied[form_key] = preset_value
+
+    return applied
+
+
 def _merge_frame_settings(
     defaults: Mapping[str, Any],
     frame_input: Mapping[str, Any],
@@ -211,7 +258,11 @@ def _merge_frame_settings(
         if idx > frame_count:
             continue
 
-        section_input = frame_input.get(f"frame_{idx}", {})
+        section_input = _apply_frame_preset(
+            defaults,
+            frame_input.get(f"frame_{idx}", {}),
+            idx,
+        )
         merged[frame_key(idx, CONF_CURRENT_TIME)] = bool(
             section_input.get(
                 CONF_CURRENT_TIME,

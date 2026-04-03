@@ -8,6 +8,7 @@ DOMAIN: Final = "lametric_mydata_diy"
 NAME: Final = "LaMetric My Data DIY"
 SERVICE_REFRESH: Final = "refresh"
 
+CONF_PRESET: Final = "preset"
 CONF_TITLE: Final = "title"
 CONF_OUTPUT_PATH: Final = "output_path"
 CONF_ENTITY_ID: Final = "entity_id"
@@ -51,12 +52,26 @@ HIDE_WHEN_OPTIONS: Final = [
     HIDE_WHEN_ZERO_OR_EMPTY,
 ]
 
-# Inferred from LaMetric's official clockface API example icon.
-DEFAULT_TIME_ICON_DATA: Final = (
-    "data:image/png;base64,"
-    "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAOklEQVQYlWNUVFBgwAeYcEncv//gP04FMEms"
-    "CmCSiooKjHAFMEF0SRQTsEnCFcAE0SUZGBgYGAl5EwA+6RhuHb9bggAAAABJRU5ErkJggg=="
-)
+PRESET_NONE: Final = "none"
+PRESET_POWER: Final = "power"
+PRESET_BATTERY_PERCENT: Final = "battery_percent"
+PRESET_ENERGY: Final = "energy"
+PRESET_TEMPERATURE: Final = "temperature"
+PRESET_VOLTAGE: Final = "voltage"
+PRESET_CURRENT: Final = "current"
+PRESET_CLOCK: Final = "clock"
+PRESET_OPTIONS: Final = [
+    PRESET_NONE,
+    PRESET_POWER,
+    PRESET_BATTERY_PERCENT,
+    PRESET_ENERGY,
+    PRESET_TEMPERATURE,
+    PRESET_VOLTAGE,
+    PRESET_CURRENT,
+    PRESET_CLOCK,
+]
+
+DEFAULT_TIME_ICON: Final = 7645
 
 DEFAULT_OUTPUT_PATH: Final = "www/lametric/my_data_diy.json"
 DEFAULT_FRAME_COUNT: Final = 4
@@ -153,6 +168,59 @@ DEFAULT_FRAMES: Final = (
         CONF_SUFFIX: "",
     },
 )
+
+FRAME_PRESET_VALUES: Final = {
+    PRESET_POWER: {
+        CONF_CURRENT_TIME: False,
+        CONF_ICON: 27464,
+        CONF_FORMAT: FORMAT_POWER,
+        CONF_PREFIX: "",
+        CONF_SUFFIX: "",
+    },
+    PRESET_BATTERY_PERCENT: {
+        CONF_CURRENT_TIME: False,
+        CONF_ICON: 389,
+        CONF_FORMAT: FORMAT_PERCENT,
+        CONF_PREFIX: "",
+        CONF_SUFFIX: "",
+    },
+    PRESET_ENERGY: {
+        CONF_CURRENT_TIME: False,
+        CONF_ICON: 7959,
+        CONF_FORMAT: FORMAT_ENERGY,
+        CONF_PREFIX: "",
+        CONF_SUFFIX: "",
+    },
+    PRESET_TEMPERATURE: {
+        CONF_CURRENT_TIME: False,
+        CONF_ICON: 2056,
+        CONF_FORMAT: FORMAT_TEMPERATURE,
+        CONF_PREFIX: "",
+        CONF_SUFFIX: "",
+    },
+    PRESET_VOLTAGE: {
+        CONF_CURRENT_TIME: False,
+        CONF_ICON: 603,
+        CONF_FORMAT: FORMAT_VOLTAGE,
+        CONF_PREFIX: "",
+        CONF_SUFFIX: "",
+    },
+    PRESET_CURRENT: {
+        CONF_CURRENT_TIME: False,
+        CONF_ICON: 604,
+        CONF_FORMAT: FORMAT_CURRENT,
+        CONF_PREFIX: "",
+        CONF_SUFFIX: "",
+    },
+    PRESET_CLOCK: {
+        CONF_CURRENT_TIME: True,
+        CONF_ENTITY_ID: "",
+        CONF_ICON: DEFAULT_TIME_ICON,
+        CONF_FORMAT: FORMAT_TIME,
+        CONF_PREFIX: "",
+        CONF_SUFFIX: "",
+    },
+}
 
 
 def frame_key(index: int, key: str) -> str:
