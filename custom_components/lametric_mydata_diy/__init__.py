@@ -10,6 +10,8 @@ from pathlib import PurePosixPath
 from typing import Any
 from uuid import uuid4
 
+from aiohttp import web
+from homeassistant.components.http import HomeAssistantView
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 from homeassistant.core import Event, HomeAssistant, ServiceCall, State
@@ -22,6 +24,7 @@ from homeassistant.util import dt as dt_util
 
 from .const import (
     CONF_CURRENT_TIME,
+    CONF_DELIVERY_MODE,
     CONF_DURATION,
     CONF_ENABLED,
     CONF_ENTITY_ID,
@@ -34,8 +37,11 @@ from .const import (
     CONF_SUFFIX,
     DEFAULT_FRAME_COUNT,
     DEFAULT_FRAMES,
+    DEFAULT_DELIVERY_MODE,
     DEFAULT_OUTPUT_PATH,
     DEFAULT_TIME_ICON,
+    DELIVERY_MODE_FILE,
+    DELIVERY_MODE_HTTP,
     DOMAIN,
     FORMAT_CURRENT,
     FORMAT_ENERGY,
@@ -50,11 +56,14 @@ from .const import (
     HIDE_WHEN_ZERO_OR_EMPTY,
     MAX_FRAME_COUNT,
     SERVICE_REFRESH,
+    HTTP_VIEW_BASE,
     frame_key,
 )
 
 _LOGGER = logging.getLogger(__name__)
 Unsub = Callable[[], None]
+DATA_WRITERS = "writers"
+DATA_HTTP_VIEW_REGISTERED = "http_view_registered"
 
 
 def _parse_float(raw: str | None, default: float | None = 0.0) -> float | None:
@@ -275,6 +284,22 @@ def _entry_config(entry: ConfigEntry) -> dict[str, Any]:
     return config
 
 
+def _domain_data(hass: HomeAssistant) -> dict[str, Any]:
+    """Return integration runtime storage."""
+    return hass.data.setdefault(
+        DOMAIN,
+        {
+            DATA_WRITERS: {},
+            DATA_HTTP_VIEW_REGISTERED: False,
+        },
+    )
+
+
+def _writers(hass: HomeAssistant) -> dict[str, "LaMetricFeedWriter"]:
+    """Return all active writers."""
+    return _domain_data(hass)[DATA_WRITERS]
+
+
 def _frame_config(config: dict[str, Any], index: int) -> dict[str, Any]:
     """Extract one frame config from flattened config-entry data."""
     defaults = DEFAULT_FRAMES[index - 1]
@@ -335,6 +360,7 @@ class LaMetricFeedWriter:
         self._unsubs: list[Unsub] = []
         self._delayed_unsub: Unsub | None = None
         self._started_unsub: Unsub | None = None
+        self._last_payload: dict[str, Any] | None = None
 
     @property
     def config(self) -> dict[str, Any]:
@@ -348,6 +374,16 @@ class LaMetricFeedWriter:
             self.hass,
             self.config.get(CONF_OUTPUT_PATH, DEFAULT_OUTPUT_PATH),
         )
+
+    @property
+    def delivery_mode(self) -> str:
+        """Return the configured payload delivery mode."""
+        return str(self.config.get(CONF_DELIVERY_MODE, DEFAULT_DELIVERY_MODE))
+
+    @property
+    def http_path(self) -> str:
+        """Return the direct HTTP endpoint path for this feed."""
+        return f"{HTTP_VIEW_BASE}/{self.entry.entry_id}"
 
     @property
     def frame_count(self) -> int:
@@ -413,14 +449,8 @@ class LaMetricFeedWriter:
         while self._unsubs:
             self._unsubs.pop()()
 
-    async def async_write_payload(self) -> None:
-        """Render and write the current payload."""
-        try:
-            output_path = self.output_path
-        except ValueError as err:
-            _LOGGER.error("Invalid output path for %s: %s", self.entry.entry_id, err)
-            return
-
+    def _render_payload(self) -> dict[str, Any]:
+        """Render the current payload for this config entry."""
         payload = {"frames": []}
         for idx in range(1, self.frame_count + 1):
             frame = _frame_config(self.config, idx)
@@ -448,8 +478,33 @@ class LaMetricFeedWriter:
                 payload_frame["icon"] = frame[CONF_ICON]
             payload["frames"].append(payload_frame)
 
+        return payload
+
+    async def async_write_payload(self) -> None:
+        """Render and publish the current payload."""
+        payload = self._render_payload()
+        self._last_payload = payload
+
+        if self.delivery_mode == DELIVERY_MODE_HTTP:
+            _LOGGER.debug("Updated LaMetric HTTP feed for %s at %s", self.entry.entry_id, self.http_path)
+            return
+
+        try:
+            output_path = self.output_path
+        except ValueError as err:
+            _LOGGER.error("Invalid output path for %s: %s", self.entry.entry_id, err)
+            return
+
         await self.hass.async_add_executor_job(_write_payload, output_path, payload)
         _LOGGER.debug("Updated LaMetric feed for %s at %s", self.entry.entry_id, output_path)
+
+    async def async_get_payload(self) -> dict[str, Any]:
+        """Return the latest payload, rendering it on demand if needed."""
+        if self._last_payload is None:
+            await self.async_write_payload()
+        if self._last_payload is None:
+            raise RuntimeError("payload not available")
+        return self._last_payload
 
     async def _handle_state_change(self, event: Event) -> None:
         """Update feed when a tracked entity changes."""
@@ -472,17 +527,53 @@ class LaMetricFeedWriter:
         self._delayed_unsub = async_call_later(self.hass, 15, _delayed_write)
 
 
+class LaMetricMyDataDIYFeedView(HomeAssistantView):
+    """Serve a LaMetric feed directly over HTTP."""
+
+    url = f"{HTTP_VIEW_BASE}/{{entry_id}}"
+    name = f"api:{DOMAIN}:feed"
+    requires_auth = False
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the HTTP view."""
+        self.hass = hass
+
+    async def get(self, request: web.Request, entry_id: str | None = None) -> web.Response:
+        """Return the current payload for one HTTP-mode feed."""
+        del request
+        entry_id = entry_id or ""
+        writer = _writers(self.hass).get(entry_id)
+        if writer is None or writer.delivery_mode != DELIVERY_MODE_HTTP:
+            raise web.HTTPNotFound()
+
+        try:
+            payload = await writer.async_get_payload()
+        except RuntimeError as err:
+            raise web.HTTPServiceUnavailable(text=str(err)) from err
+
+        return web.json_response(payload)
+
+
+def _ensure_http_view_registered(hass: HomeAssistant) -> None:
+    """Register the direct feed HTTP view once per runtime."""
+    data = _domain_data(hass)
+    if data[DATA_HTTP_VIEW_REGISTERED]:
+        return
+    hass.http.register_view(LaMetricMyDataDIYFeedView(hass))
+    data[DATA_HTTP_VIEW_REGISTERED] = True
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up LaMetric My Data DIY from a config entry."""
-    hass.data.setdefault(DOMAIN, {})
+    _ensure_http_view_registered(hass)
     writer = LaMetricFeedWriter(hass, entry)
-    hass.data[DOMAIN][entry.entry_id] = writer
+    _writers(hass)[entry.entry_id] = writer
     await writer.async_start()
 
     if not hass.services.has_service(DOMAIN, SERVICE_REFRESH):
         async def _handle_refresh(call: ServiceCall) -> None:
             entry_id = call.data.get("entry_id")
-            writers: dict[str, LaMetricFeedWriter] = hass.data[DOMAIN]
+            writers = _writers(hass)
             if entry_id:
                 writer = writers.get(entry_id)
                 if writer is not None:
@@ -499,10 +590,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
-    writer: LaMetricFeedWriter = hass.data[DOMAIN].pop(entry.entry_id)
+    writer = _writers(hass).pop(entry.entry_id)
     await writer.async_stop()
 
-    if not hass.data[DOMAIN] and hass.services.has_service(DOMAIN, SERVICE_REFRESH):
+    if not _writers(hass) and hass.services.has_service(DOMAIN, SERVICE_REFRESH):
         hass.services.async_remove(DOMAIN, SERVICE_REFRESH)
 
     return True
@@ -522,6 +613,10 @@ async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     options = dict(entry.options)
     updated = False
 
+    if CONF_DELIVERY_MODE not in data:
+        data[CONF_DELIVERY_MODE] = DEFAULT_DELIVERY_MODE
+        updated = True
+
     if CONF_FRAME_COUNT not in data:
         data[CONF_FRAME_COUNT] = DEFAULT_FRAME_COUNT
         updated = True
@@ -539,7 +634,7 @@ async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             data=data,
             options=options,
             version=1,
-            minor_version=2,
+            minor_version=3,
         )
 
     return True

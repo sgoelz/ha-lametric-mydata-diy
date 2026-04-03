@@ -8,6 +8,7 @@ DOMAIN: Final = "lametric_mydata_diy"
 NAME: Final = "LaMetric My Data DIY"
 SERVICE_REFRESH: Final = "refresh"
 
+CONF_DELIVERY_MODE: Final = "delivery_mode"
 CONF_PRESET: Final = "preset"
 CONF_TITLE: Final = "title"
 CONF_OUTPUT_PATH: Final = "output_path"
@@ -72,6 +73,15 @@ PRESET_OPTIONS: Final = [
 ]
 
 DEFAULT_TIME_ICON: Final = 7645
+
+DELIVERY_MODE_FILE: Final = "file"
+DELIVERY_MODE_HTTP: Final = "http"
+DELIVERY_MODE_OPTIONS: Final = [
+    DELIVERY_MODE_FILE,
+    DELIVERY_MODE_HTTP,
+]
+DEFAULT_DELIVERY_MODE: Final = DELIVERY_MODE_FILE
+HTTP_VIEW_BASE: Final = "/api/lametric_mydata_diy"
 
 DEFAULT_OUTPUT_PATH: Final = "www/lametric/my_data_diy.json"
 DEFAULT_FRAME_COUNT: Final = 4

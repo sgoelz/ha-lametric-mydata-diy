@@ -9,10 +9,11 @@
     "step": {
       "user": {
         "title": "General settings",
-        "description": "Configure the feed name, file path and number of frames.",
+        "description": "Configure the delivery mode, feed name, file path and number of frames.",
         "data": {
+          "delivery_mode": "Delivery mode",
           "title": "Feed name",
-          "output_path": "Feed file path",
+          "output_path": "Feed file path (file mode)",
           "frame_count": "Number of frames"
         }
       },
@@ -146,10 +147,11 @@
     "step": {
       "init": {
         "title": "General settings",
-        "description": "Adjust the feed name, file path and number of frames.",
+        "description": "Adjust the delivery mode, feed name, file path and number of frames.",
         "data": {
+          "delivery_mode": "Delivery mode",
           "title": "Feed name",
-          "output_path": "Feed file path",
+          "output_path": "Feed file path (file mode)",
           "frame_count": "Number of frames"
         }
       },
@@ -274,6 +276,12 @@
     }
   },
   "selector": {
+    "delivery_mode": {
+      "options": {
+        "file": "Static file in /local",
+        "http": "Direct HTTP endpoint"
+      }
+    },
     "frame_preset": {
       "options": {
         "none": "No preset",

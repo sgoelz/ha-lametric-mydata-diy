@@ -9,10 +9,11 @@
     "step": {
       "user": {
         "title": "Allgemeine Einstellungen",
-        "description": "Konfiguriere den Feed-Namen, den Dateipfad und die Anzahl der Frames.",
+        "description": "Konfiguriere den Ausgabemodus, den Feed-Namen, den Dateipfad und die Anzahl der Frames.",
         "data": {
+          "delivery_mode": "Ausgabemodus",
           "title": "Feed-Name",
-          "output_path": "Pfad zur Feed-Datei",
+          "output_path": "Pfad zur Feed-Datei (Dateimodus)",
           "frame_count": "Anzahl der Frames"
         }
       },
@@ -146,10 +147,11 @@
     "step": {
       "init": {
         "title": "Allgemeine Einstellungen",
-        "description": "Passe den Feed-Namen, den Dateipfad und die Anzahl der Frames an.",
+        "description": "Passe den Ausgabemodus, den Feed-Namen, den Dateipfad und die Anzahl der Frames an.",
         "data": {
+          "delivery_mode": "Ausgabemodus",
           "title": "Feed-Name",
-          "output_path": "Pfad zur Feed-Datei",
+          "output_path": "Pfad zur Feed-Datei (Dateimodus)",
           "frame_count": "Anzahl der Frames"
         }
       },
@@ -274,6 +276,12 @@
     }
   },
   "selector": {
+    "delivery_mode": {
+      "options": {
+        "file": "Statische Datei unter /local",
+        "http": "Direkter HTTP-Endpunkt"
+      }
+    },
     "frame_preset": {
       "options": {
         "none": "Keine Vorlage",

@@ -10,12 +10,18 @@ This custom integration lets you configure up to eight rotating LaMetric frames 
 - an optional preset for common frame types
 - an optional prefix
 - an optional suffix
-- output only under Home Assistant's `www/...` folder
+- delivery either as a static file or as a direct HTTP endpoint
 
-The integration writes a JSON file into Home Assistant's `www/...` folder, so the resulting URL can be polled directly by the LaMetric app:
+The default file mode writes a JSON file into Home Assistant's `www/...` folder, so the resulting URL can be polled directly by the LaMetric app:
 
 ```text
 http://<home-assistant>:8123/local/lametric/my_data_diy.json
+```
+
+Milestone 1 of the HTTP mode also supports a direct endpoint per config entry:
+
+```text
+http://<home-assistant>:8123/api/lametric_mydata_diy/<entry_id>
 ```
 
 ## Features
@@ -24,6 +30,7 @@ http://<home-assistant>:8123/local/lametric/my_data_diy.json
 - UI-based configuration via Config Flow
 - Two-step config flow with a cleaner separation between general settings and frame details
 - Collapsible per-frame sections in setup and options
+- Delivery mode selector for static file or direct HTTP endpoint
 - One-click frame presets for common LaMetric use cases
 - Option flow for later edits
 - Multiple feeds via multiple config entries
@@ -60,8 +67,9 @@ Copy `custom_components/lametric_mydata_diy` into your Home Assistant `custom_co
 The setup runs in two steps:
 
 1. General settings
+   - delivery mode
    - feed title
-   - one output path inside your Home Assistant config directory (default: `www/lametric/my_data_diy.json`)
+   - one output path inside your Home Assistant config directory for file mode (default: `www/lametric/my_data_diy.json`)
    - active frame count
 2. Frame settings for the active frames only
    - optional preset
@@ -118,6 +126,27 @@ The `Use current time` preset is the simplest way to configure a clock frame:
 - if a time frame is saved with icon `0`, the integration falls back to the default clock icon
 
 You can also keep using the plain `time` value format if you prefer.
+
+## Delivery modes
+
+### File mode
+
+This is the default mode.
+
+- writes the rendered payload into `www/...`
+- feed is reachable through `/local/...`
+- easiest option for typical LaMetric `My Data DIY` setups
+
+### HTTP mode
+
+This mode serves the payload directly from the integration without writing a file.
+
+- feed is reachable under `/api/lametric_mydata_diy/<entry_id>`
+- designed for local-network usage in Milestone 1
+- the endpoint path currently uses the Home Assistant config entry ID
+- no token-based public sharing is included yet
+
+The rendering logic is the same in both modes, including current-time frames and hide rules.
 
 ## Service
 

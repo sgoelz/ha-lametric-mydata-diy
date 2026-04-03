@@ -23,6 +23,7 @@ from homeassistant.helpers.selector import (
 
 from .const import (
     CONF_CURRENT_TIME,
+    CONF_DELIVERY_MODE,
     CONF_DURATION,
     CONF_ENABLED,
     CONF_ENTITY_ID,
@@ -36,9 +37,11 @@ from .const import (
     CONF_SUFFIX,
     CONF_TITLE,
     DEFAULT_FRAME_COUNT,
+    DEFAULT_DELIVERY_MODE,
     DEFAULT_FRAMES,
     DEFAULT_OUTPUT_PATH,
     DEFAULT_TITLE,
+    DELIVERY_MODE_OPTIONS,
     DOMAIN,
     FRAME_PRESET_VALUES,
     FORMAT_OPTIONS,
@@ -83,6 +86,7 @@ def _coerce_frame_count(raw: Any) -> int:
 def _defaults_from_mapping(mapping: Mapping[str, Any] | None) -> dict[str, Any]:
     """Return defaults merged with hardcoded fallbacks."""
     defaults: dict[str, Any] = {
+        CONF_DELIVERY_MODE: DEFAULT_DELIVERY_MODE,
         CONF_TITLE: DEFAULT_TITLE,
         CONF_OUTPUT_PATH: DEFAULT_OUTPUT_PATH,
         CONF_FRAME_COUNT: DEFAULT_FRAME_COUNT,
@@ -101,6 +105,16 @@ def _general_schema(defaults: Mapping[str, Any]) -> vol.Schema:
     """Build the first-step schema."""
     return vol.Schema(
         {
+            vol.Required(
+                CONF_DELIVERY_MODE,
+                default=defaults.get(CONF_DELIVERY_MODE, DEFAULT_DELIVERY_MODE),
+            ): SelectSelector(
+                SelectSelectorConfig(
+                    options=DELIVERY_MODE_OPTIONS,
+                    mode=SelectSelectorMode.DROPDOWN,
+                    translation_key="delivery_mode",
+                )
+            ),
             vol.Required(
                 CONF_TITLE,
                 default=defaults.get(CONF_TITLE, DEFAULT_TITLE),
@@ -298,7 +312,7 @@ class LaMetricMyDataDIYConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for LaMetric My Data DIY."""
 
     VERSION = 1
-    MINOR_VERSION = 2
+    MINOR_VERSION = 3
 
     def __init__(self) -> None:
         """Initialize the config flow."""
@@ -320,6 +334,9 @@ class LaMetricMyDataDIYConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             try:
                 self._pending_data = {
+                    CONF_DELIVERY_MODE: str(
+                        user_input.get(CONF_DELIVERY_MODE, DEFAULT_DELIVERY_MODE)
+                    ),
                     CONF_TITLE: _normalize_title(user_input.get(CONF_TITLE)),
                     CONF_OUTPUT_PATH: _normalize_output_path(user_input.get(CONF_OUTPUT_PATH)),
                     CONF_FRAME_COUNT: _coerce_frame_count(user_input.get(CONF_FRAME_COUNT)),
@@ -374,6 +391,9 @@ class LaMetricMyDataDIYOptionsFlow(config_entries.OptionsFlow):
         if user_input is not None:
             try:
                 self._pending_options = dict(defaults)
+                self._pending_options[CONF_DELIVERY_MODE] = str(
+                    user_input.get(CONF_DELIVERY_MODE, DEFAULT_DELIVERY_MODE)
+                )
                 self._pending_options[CONF_TITLE] = _normalize_title(
                     user_input.get(CONF_TITLE),
                     self._config_entry.title,
