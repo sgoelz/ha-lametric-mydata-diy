@@ -85,13 +85,13 @@ the options. The applied values remain editable afterwards.
 
 You can browse official LaMetric icons in the [LaMetric icon gallery](https://developer.lametric.com/icons).
 
-Recommended defaults for a typical energy dashboard setup:
+Example frame combinations:
 
-- `sensor.total_dc_power` + icon `27464` + `power`
-- `sensor.battery_level` + icon `389` + `percent`
-- `sensor.skoda_enyaq_batteriestand` + icon `2809` + `percent`
-- `sensor.batteriestand` + icon `2818` + `percent`
-- `sensor.daily_imported_energy` + icon `7959` + `energy`
+- a power sensor + icon `27464` + `power`
+- a battery percentage sensor + icon `389` + `percent`
+- an energy sensor + icon `7959` + `energy`
+- a temperature sensor + icon `2056` + `temperature`
+- a voltage sensor + icon `603` + `voltage`
 - no entity + icon `7645` + `time`
 
 The `energy` formatter reads the entity unit and scales supported values automatically between
