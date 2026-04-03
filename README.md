@@ -119,26 +119,6 @@ The `Use current time` preset is the simplest way to configure a clock frame:
 
 You can also keep using the plain `time` value format if you prefer.
 
-## HACS notes
-
-This repository includes the basics HACS usually expects for a custom integration repository:
-
-- `hacs.json`
-- `manifest.json`
-- brand assets inside the integration directory
-- validation via `hacs/action` and `hassfest`
-- issue templates and installation documentation
-
-## HACS default repository checklist
-
-If you want to propose this repository for inclusion in the default HACS list later, make sure you have:
-
-- a public GitHub repository with Issues enabled
-- a clear repository description and relevant topics
-- at least one published GitHub Release
-- passing `hacs/action` and `hassfest`
-- installation and usage documentation in the README
-
 ## Service
 
 You can force a refresh manually:
