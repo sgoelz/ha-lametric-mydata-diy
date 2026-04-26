@@ -24,6 +24,8 @@ HTTP mode also supports a direct endpoint per feed:
 http://<home-assistant>:8123/api/lametric_mydata_diy/pv-dashboard
 ```
 
+This HTTP endpoint is authenticated and is not meant to be publicly reachable without a Home Assistant access token.
+
 ## Features
 
 - HACS-compatible custom integration
@@ -86,6 +88,9 @@ Active frames are controlled by the configured frame count. In the second step, 
 as its own collapsible section. Setting icon `0` removes the icon and keeps the text for regular
 value frames.
 
+New feeds start with blank frame rows on purpose. You pick the entity, icon, and format yourself,
+or use a preset as a quick starting point.
+
 Frame presets help fill common combinations quickly. They can prefill icon and format suggestions
 for common use cases such as power, battery percentage, energy, temperature, voltage, current, and
 clock frames. Presets are apply-on-save helpers: they set the actual frame fields when you save, but
@@ -144,6 +149,8 @@ This mode serves the payload directly from the integration without writing a fil
 
 - feed is reachable under `/api/lametric_mydata_diy/<slug>`
 - designed for local-network usage inside your Home Assistant instance
+- requires Home Assistant authentication for every request
+- better suited for authenticated clients, automations, or reverse-proxy setups than for anonymous polling
 - you choose the HTTP path slug in the config flow, for example `pv-dashboard`
 - no token-based public sharing is included yet
 

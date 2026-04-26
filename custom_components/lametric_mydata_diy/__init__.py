@@ -60,112 +60,22 @@ from .const import (
     HTTP_VIEW_BASE,
     frame_key,
 )
-from .util import default_http_slug
+from .util import (
+    default_http_slug,
+    format_compact_number,
+    format_energy,
+    format_power,
+    normalize_current,
+    normalize_energy_to_wh,
+    normalize_temperature,
+    normalize_voltage,
+    parse_float,
+)
 
 _LOGGER = logging.getLogger(__name__)
 Unsub = Callable[[], None]
 DATA_WRITERS = "writers"
 DATA_HTTP_VIEW_REGISTERED = "http_view_registered"
-
-
-def _parse_float(raw: str | None, default: float | None = 0.0) -> float | None:
-    try:
-        return float(str(raw).replace(",", "."))
-    except (TypeError, ValueError):
-        return default
-
-
-def _normalize_energy_to_wh(raw: str | None, unit: Any) -> float | None:
-    """Convert a supported energy value to Wh."""
-    factors = {
-        "wh": 1,
-        "kwh": 1_000,
-        "mwh": 1_000_000,
-        "gwh": 1_000_000_000,
-    }
-    normalized_unit = str(unit or "").strip().lower().replace(" ", "")
-    factor = factors.get(normalized_unit)
-    if factor is None:
-        return None
-
-    value = _parse_float(raw, None)
-    if value is None:
-        return None
-
-    return value * factor
-
-
-def _normalize_temperature(raw: str | None, unit: Any) -> tuple[float, str] | None:
-    """Convert a supported temperature value to a display tuple."""
-    normalized_unit = str(unit or "").strip().lower().replace(" ", "")
-    display_unit = {
-        "°c": "°C",
-        "c": "°C",
-        "°f": "°F",
-        "f": "°F",
-    }.get(normalized_unit)
-    if display_unit is None:
-        return None
-
-    value = _parse_float(raw, None)
-    if value is None:
-        return None
-
-    return value, display_unit
-
-
-def _normalize_voltage(raw: str | None, unit: Any) -> tuple[float, str] | None:
-    """Convert a supported voltage value to volts."""
-    normalized_unit = str(unit or "").strip().lower().replace(" ", "")
-    factor = {
-        "v": 1,
-        "mv": 0.001,
-    }.get(normalized_unit)
-    if factor is None:
-        return None
-
-    value = _parse_float(raw, None)
-    if value is None:
-        return None
-
-    return value * factor, "V"
-
-
-def _normalize_current(raw: str | None, unit: Any) -> tuple[float, str] | None:
-    """Convert a supported current value to amps."""
-    normalized_unit = str(unit or "").strip().lower().replace(" ", "")
-    factor = {
-        "a": 1,
-        "ma": 0.001,
-    }.get(normalized_unit)
-    if factor is None:
-        return None
-
-    value = _parse_float(raw, None)
-    if value is None:
-        return None
-
-    return value * factor, "A"
-
-
-def _format_energy(energy_wh: float) -> str:
-    """Format an energy value using compact units."""
-    magnitude = abs(energy_wh)
-    if magnitude >= 1_000_000_000:
-        return f"{energy_wh / 1_000_000_000:.1f}GWh"
-    if magnitude >= 1_000_000:
-        return f"{energy_wh / 1_000_000:.1f}MWh"
-    if magnitude >= 1_000:
-        return f"{energy_wh / 1_000:.1f}kWh"
-    return f"{round(energy_wh):.0f}Wh"
-
-
-def _format_compact_number(value: float, unit: str) -> str:
-    """Format a unit-bearing value with at most one decimal place."""
-    rounded = round(value, 1)
-    if rounded.is_integer():
-        return f"{int(rounded)}{unit}"
-    return f"{rounded:.1f}{unit}"
 
 
 def _is_empty_state(raw: str | None) -> bool:
@@ -176,7 +86,7 @@ def _is_empty_state(raw: str | None) -> bool:
 
 def _is_zero_state(raw: str | None) -> bool:
     """Return whether the raw state is a numeric zero."""
-    value = _parse_float(raw, None)
+    value = parse_float(raw, None)
     return value is not None and abs(value) < 1e-9
 
 
@@ -187,13 +97,11 @@ def _format_value(state: State | None, value_format: str) -> str:
         return dt_util.now().strftime("%H:%M")
 
     if value_format == FORMAT_POWER:
-        watts = _parse_float(raw, 0.0)
-        if watts >= 1000:
-            return f"{watts / 1000:.1f}kW"
-        return f"{round(watts):.0f}W"
+        watts = parse_float(raw, 0.0)
+        return format_power(watts)
 
     if value_format == FORMAT_PERCENT:
-        percent = _parse_float(raw, -1.0)
+        percent = parse_float(raw, -1.0)
         if percent < 0:
             return "--%"
         return f"{round(percent):.0f}%"
@@ -201,49 +109,49 @@ def _format_value(state: State | None, value_format: str) -> str:
     if value_format == FORMAT_ENERGY:
         if raw in (None, "", "unknown", "unavailable"):
             return "--"
-        energy_wh = _normalize_energy_to_wh(
+        energy_wh = normalize_energy_to_wh(
             raw,
             state.attributes.get("unit_of_measurement") if state else None,
         )
         if energy_wh is None:
             return str(raw)
-        return _format_energy(energy_wh)
+        return format_energy(energy_wh)
 
     if value_format == FORMAT_TEMPERATURE:
         if raw in (None, "", "unknown", "unavailable"):
             return "--"
-        normalized = _normalize_temperature(
+        normalized = normalize_temperature(
             raw,
             state.attributes.get("unit_of_measurement") if state else None,
         )
         if normalized is None:
             return str(raw)
         value, unit = normalized
-        return _format_compact_number(value, unit)
+        return format_compact_number(value, unit)
 
     if value_format == FORMAT_VOLTAGE:
         if raw in (None, "", "unknown", "unavailable"):
             return "--"
-        normalized = _normalize_voltage(
+        normalized = normalize_voltage(
             raw,
             state.attributes.get("unit_of_measurement") if state else None,
         )
         if normalized is None:
             return str(raw)
         value, unit = normalized
-        return _format_compact_number(value, unit)
+        return format_compact_number(value, unit)
 
     if value_format == FORMAT_CURRENT:
         if raw in (None, "", "unknown", "unavailable"):
             return "--"
-        normalized = _normalize_current(
+        normalized = normalize_current(
             raw,
             state.attributes.get("unit_of_measurement") if state else None,
         )
         if normalized is None:
             return str(raw)
         value, unit = normalized
-        return _format_compact_number(value, unit)
+        return format_compact_number(value, unit)
 
     if raw in (None, "", "unknown", "unavailable"):
         return "--"
@@ -579,7 +487,7 @@ class LaMetricMyDataDIYFeedView(HomeAssistantView):
 
     url = f"{HTTP_VIEW_BASE}/{{slug}}"
     name = f"api:{DOMAIN}:feed"
-    requires_auth = False
+    requires_auth = True
 
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the HTTP view."""
